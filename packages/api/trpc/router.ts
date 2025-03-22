@@ -7,6 +7,7 @@
 import { authRouter } from '#modules/auth/auth.router'
 import { billingRouter } from '#modules/billing/billing.router'
 import { contactsRouter } from '#modules/contacts/contacts.router'
+import { chatRouter } from '#modules/chat/chat.router';
 import { dashboardRouter } from '#modules/dashboard/dashboard.router'
 import { notificationsRouter } from '#modules/notifications/notifications.router'
 import { tagsRouter } from '#modules/tags/tags.router'
@@ -22,6 +23,7 @@ export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
   notifications: notificationsRouter,
   tags: tagsRouter,
+  chat: chatRouter,
   users: usersRouter,
   workspaces: workspacesRouter,
   workspaceMembers: workspaceMembersRouter,

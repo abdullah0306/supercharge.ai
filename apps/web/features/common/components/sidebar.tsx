@@ -47,6 +47,7 @@ import {
   LuTrendingUp,
   LuClipboardList,
   LuChartPie,
+  LuInbox,
 } from 'react-icons/lu'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa' // Import arrow icons
 
@@ -64,7 +65,7 @@ import { AppSidebarTags } from './sidebar-tags'
 import { UserMenu } from './user-menu'
 import { WorkspacesMenu } from './workspaces-menu'
 
-export interface AppSidebarProps extends SidebarProps {}
+export interface AppSidebarProps extends SidebarProps { }
 
 export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
   const modals = useModals()
@@ -150,14 +151,23 @@ export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
                 icon={<LuHouse />}
                 hotkey="navigation.dashboard"
               />
-          
+
+              <AppSidebarLink
+                href={usePath('inbox')}
+                isActive={useActivePath('inbox', { end: false })}
+                label="Inbox"
+                badge={2}
+                icon={<LuInbox />}
+                hotkey="navigation.inbox"
+              />
+
               <AppSidebarLink
                 href={usePath('assistants')}
                 label="Assistants"
                 icon={<LuUser />}
                 hotkey="navigation.assistants"
               />
-          
+
 
               {/* Parent Accounting Item */}
               <NavItem
