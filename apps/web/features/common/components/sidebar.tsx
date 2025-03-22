@@ -170,7 +170,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
 
 
               {/* Parent Accounting Item */}
-              <NavItem
+              {/* <NavItem
                 icon={<LuBanknote />}
                 onClick={() => setIsAccountingOpen(!isAccountingOpen)}
                 display="flex"
@@ -186,10 +186,10 @@ export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
                     color="gray.600"
                   />
                 </Box>
-              </NavItem>
+              </NavItem> */}
 
               {/* Accounting subitems */}
-              <Collapse in={isAccountingOpen}>
+              {/* <Collapse in={isAccountingOpen}>
                 <Stack pl={4}>
                   <AppSidebarLink
                     href={usePath('accounts')}
@@ -220,10 +220,10 @@ export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
                     hotkey="navigation.cashflow"
                   />
                 </Stack>
-              </Collapse>
+              </Collapse> */}
 
               {/* Parent Reports Item */}
-              <NavItem
+              {/* <NavItem
                 icon={<LuFileText />}
                 onClick={() => setIsReportsOpen(!isReportsOpen)}
                 display="flex"
@@ -239,10 +239,10 @@ export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
                     color="gray.600"
                   />
                 </Box>
-              </NavItem>
+              </NavItem> */}
 
               {/* Reports subitems */}
-              <Collapse in={isReportsOpen}>
+              {/* <Collapse in={isReportsOpen}>
                 <Stack pl={4}>
                   <AppSidebarLink
                     href={usePath('profit-loss')}
@@ -266,7 +266,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
                     hotkey="navigation.cashflowStatement"
                   />
                 </Stack>
-              </Collapse>
+              </Collapse> */}
             </NavGroup>
 
             {!isCompact && <AppSidebarTags />}
