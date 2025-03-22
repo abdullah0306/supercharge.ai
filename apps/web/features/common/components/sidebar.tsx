@@ -150,28 +150,14 @@ export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
                 icon={<LuHouse />}
                 hotkey="navigation.dashboard"
               />
-              {/* <AppSidebarLink
-                href={usePath('inbox')}
-                isActive={useActivePath('inbox', { end: false })}
-                label="Inbox"
-                badge={2}
-                icon={<LuInbox />}
-                hotkey="navigation.inbox"
-              />
+          
               <AppSidebarLink
-                href={usePath('contacts')}
-                isActive={useActivePath('contacts', { end: false })}
-                label="Contacts"
-                icon={<LuSquareUser />}
-                hotkey="navigation.contacts"
-              /> */}
-              <AppSidebarLink
-                href={usePath('bank-integrations')}
-                isActive={useActivePath('bank-integrations', { end: false })}
-                label="Bank Integrations"
-                icon={<LuWallet />}
-                hotkey="navigation.bankIntegrations"
+                href={usePath('assistants')}
+                label="Assistants"
+                icon={<LuUser />}
+                hotkey="navigation.assistants"
               />
+          
 
               {/* Parent Accounting Item */}
               <NavItem
