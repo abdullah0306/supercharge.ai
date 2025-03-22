@@ -47,7 +47,6 @@ import {
   LuTrendingUp,
   LuClipboardList,
   LuChartPie,
-  LuInbox,
 } from 'react-icons/lu'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa' // Import arrow icons
 
@@ -65,7 +64,7 @@ import { AppSidebarTags } from './sidebar-tags'
 import { UserMenu } from './user-menu'
 import { WorkspacesMenu } from './workspaces-menu'
 
-export interface AppSidebarProps extends SidebarProps { }
+export interface AppSidebarProps extends SidebarProps {}
 
 export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
   const modals = useModals()
@@ -151,26 +150,17 @@ export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
                 icon={<LuHouse />}
                 hotkey="navigation.dashboard"
               />
-
-              <AppSidebarLink
-                href={usePath('inbox')}
-                isActive={useActivePath('inbox', { end: false })}
-                label="Inbox"
-                badge={2}
-                icon={<LuInbox />}
-                hotkey="navigation.inbox"
-              />
-
+          
               <AppSidebarLink
                 href={usePath('assistants')}
                 label="Assistants"
                 icon={<LuUser />}
                 hotkey="navigation.assistants"
               />
-
+          
 
               {/* Parent Accounting Item */}
-              {/* <NavItem
+              <NavItem
                 icon={<LuBanknote />}
                 onClick={() => setIsAccountingOpen(!isAccountingOpen)}
                 display="flex"
@@ -186,10 +176,10 @@ export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
                     color="gray.600"
                   />
                 </Box>
-              </NavItem> */}
+              </NavItem>
 
               {/* Accounting subitems */}
-              {/* <Collapse in={isAccountingOpen}>
+              <Collapse in={isAccountingOpen}>
                 <Stack pl={4}>
                   <AppSidebarLink
                     href={usePath('accounts')}
@@ -220,10 +210,10 @@ export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
                     hotkey="navigation.cashflow"
                   />
                 </Stack>
-              </Collapse> */}
+              </Collapse>
 
               {/* Parent Reports Item */}
-              {/* <NavItem
+              <NavItem
                 icon={<LuFileText />}
                 onClick={() => setIsReportsOpen(!isReportsOpen)}
                 display="flex"
@@ -239,10 +229,10 @@ export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
                     color="gray.600"
                   />
                 </Box>
-              </NavItem> */}
+              </NavItem>
 
               {/* Reports subitems */}
-              {/* <Collapse in={isReportsOpen}>
+              <Collapse in={isReportsOpen}>
                 <Stack pl={4}>
                   <AppSidebarLink
                     href={usePath('profit-loss')}
@@ -266,7 +256,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
                     hotkey="navigation.cashflowStatement"
                   />
                 </Stack>
-              </Collapse> */}
+              </Collapse>
             </NavGroup>
 
             {!isCompact && <AppSidebarTags />}
