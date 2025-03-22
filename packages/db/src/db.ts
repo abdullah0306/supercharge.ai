@@ -10,6 +10,7 @@ import * as chatSchema from './chat/chat.schema';
 import * as tags from './tags/tags.sql'
 import * as users from './users/users.sql'
 import * as workspaces from './workspaces/workspaces.sql'
+import * as auth from './auth/auth.sql'
 
 const schema = {
   ...activityLogs,
@@ -21,6 +22,7 @@ const schema = {
   ...tags,
   ...chat,
   ...chatSchema,
+  ...auth
 }
 
 export const db = drizzle(postgres(process.env.DATABASE_URL!), {
