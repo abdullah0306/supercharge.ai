@@ -2,10 +2,10 @@ import { z } from "zod";
 import { and, eq } from "drizzle-orm";
 import { createTRPCRouter, protectedProcedure, workspaceProcedure } from "#trpc";
 import { db } from "@acme/db";
-import { chatHistory } from "../../../db/src/chat/chat.schema";
+import { chatHistory } from "../../../db/src/chat/chat.sql";
 import { workspaces } from "../../../db/src/workspaces/workspaces.sql";
 import { v4 as uuidv4 } from 'uuid';
-import { generateAIResponse } from '../../../../apps/web/lib/ai/assistant';
+import { generateAIResponse, type ChatMessage } from '../../../../apps/web/lib/ai/assistant';
 
 const DEFAULT_WELCOME_MESSAGE = "Hello! How can I help you today?";
 
@@ -42,10 +42,10 @@ export const chatRouter = createTRPCRouter({
           await db.insert(chatHistory).values({
             userId: ctx.session.user.id,
             workspaceId: input.workspaceId,
-            conversationId: conversationId,
+            conversationId,
             role: 'assistant',
             message: DEFAULT_WELCOME_MESSAGE,
-            createdAt: new Date(),
+            timestamp: new Date(),
           });
         }
 
@@ -59,7 +59,7 @@ export const chatRouter = createTRPCRouter({
               eq(chatHistory.userId, ctx.session.user.id)
             )
           )
-          .orderBy(chatHistory.createdAt);
+          .orderBy(chatHistory.timestamp);
 
         return messages;
       } catch (error) {
@@ -88,7 +88,7 @@ export const chatRouter = createTRPCRouter({
           conversationId: input.conversationId,
           role: 'user',
           message: input.message,
-          createdAt: new Date(),
+          timestamp: new Date(),
         });
 
         // Get conversation history for context
@@ -101,18 +101,18 @@ export const chatRouter = createTRPCRouter({
               eq(chatHistory.conversationId, input.conversationId)
             )
           )
-          .orderBy(chatHistory.createdAt);
+          .orderBy(chatHistory.timestamp);
 
-        // Format messages for OpenAI
-        const messageHistory = previousMessages.map(msg => ({
+        // Transform messages to ChatMessage format
+        const chatMessages: ChatMessage[] = previousMessages.map(msg => ({
           conversation_id: msg.conversationId,
-          role: msg.role as 'user' | 'assistant',
+          role: msg.role,
           content: msg.message
         }));
 
-        // Generate AI response using OpenAI
-        const aiResponse = await generateAIResponse(messageHistory);
-        
+        // Generate AI response
+        const aiResponse = await generateAIResponse(chatMessages);
+
         // Insert AI response
         await db.insert(chatHistory).values({
           userId: ctx.session.user.id,
@@ -120,16 +120,16 @@ export const chatRouter = createTRPCRouter({
           conversationId: input.conversationId,
           role: 'assistant',
           message: aiResponse,
-          createdAt: new Date(),
+          timestamp: new Date(),
         });
 
-        return { 
+        return {
           success: true,
-          message: aiResponse 
+          message: aiResponse,
         };
       } catch (error) {
         console.error('Error sending message:', error);
-        throw new Error(`Failed to send message: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error('Failed to send message. Please try again.');
       }
     }),
 });

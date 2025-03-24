@@ -1,10 +1,11 @@
 import OpenAI from 'openai';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '@acme/db';
-import { chatHistory } from '../../../../packages/db/src/chat/chat.schema';
+import { chatHistory } from '../../../../packages/db/src/chat/chat.sql';
 
+// Initialize OpenAI with browser support
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true
 });
 
@@ -16,6 +17,10 @@ export interface ChatMessage {
 
 export const generateAIResponse = async (messages: ChatMessage[]): Promise<string> => {
   try {
+    if (!openai.apiKey) {
+      throw new Error('OpenAI API key is not configured');
+    }
+
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: messages.map(msg => ({
@@ -51,7 +56,8 @@ export const saveChatMessage = async (
     role,
     message,
     workspaceId,
-    conversationId: conversationId || uuidv4()
+    conversationId: conversationId || uuidv4(),
+    timestamp: new Date()
   });
 };
 

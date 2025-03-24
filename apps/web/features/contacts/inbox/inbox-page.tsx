@@ -191,42 +191,16 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
     }
   );
 
-  // Handle initial welcome message and loading state
-  React.useEffect(() => {
-    if (chatHistory && chatHistory.length === 0) {
-      const mutation = api.chat.sendMessage.useMutation({
-        onSuccess: async (response: any) => {
-          await refetchChat();
-          console.log('Welcome message sent successfully:', response);
-        },
-        onError: (error: any) => {
-          console.error('Failed to send welcome message:', error);
-        }
-      });
-
-      mutation.mutate({
-        workspaceId: workspaceId ?? '',
-        conversationId: conversationId,
-        message: "Hello! How can I help you today?",
-      });
-    }
-    setIsWelcomeLoading(false);
-  }, [chatHistory, workspaceId, conversationId]);
-
-  const toast = useToast();
-
-  // Send message mutation with workspace slug
   const sendMessageMutation = api.chat.sendMessage.useMutation({
-    onSuccess: async (response: any) => {
+    onSuccess: async (response) => {
       setMessageInput('');
       await refetchChat();
-      console.log('Message sent successfully:', response);
     },
-    onError: (error: { message: any }) => {
+    onError: (error) => {
       console.error('Failed to send message:', error);
       toast({
         title: 'Error',
-        description: error.message,
+        description: 'Failed to send message. Please try again.',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -251,17 +225,22 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
 
     setIsLoading(true);
     setIsAILoading(true);
+    
     try {
-      await sendMessageMutation.mutate({
-        workspaceId: workspaceId ?? '',
-        conversationId: conversationId,
-        message: messageInput,
+      const response = await sendMessageMutation.mutateAsync({
+        workspaceId,
+        conversationId,
+        message: messageInput.trim(),
       });
+      
+      if (response?.success) {
+        setMessageInput('');
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       toast({
         title: 'Error Sending Message',
-        description: error instanceof Error ? error.message : 'An unknown error occurred',
+        description: 'Failed to send message. Please try again.',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -271,6 +250,30 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
       setIsAILoading(false);
     }
   };
+
+  // Handle initial welcome message and loading state
+  React.useEffect(() => {
+    if (chatHistory && chatHistory.length === 0) {
+      const mutation = api.chat.sendMessage.useMutation({
+        onSuccess: async (response: any) => {
+          await refetchChat();
+          console.log('Welcome message sent successfully:', response);
+        },
+        onError: (error: any) => {
+          console.error('Failed to send welcome message:', error);
+        }
+      });
+
+      mutation.mutate({
+        workspaceId: workspaceId ?? '',
+        conversationId: conversationId,
+        message: "Hello! How can I help you today?",
+      });
+    }
+    setIsWelcomeLoading(false);
+  }, [chatHistory, workspaceId, conversationId]);
+
+  const toast = useToast();
 
   // Initialize chat when selecting AI Assistant
   React.useEffect(() => {
@@ -328,9 +331,11 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
     if (!chatHistory || chatHistory.length === 0) return []
     
     // Sort messages by creation time to ensure correct order
-    const sortedMessages = [...chatHistory].sort((a, b) => 
-      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    );
+    const sortedMessages = [...chatHistory].sort((a, b) => {
+      const aTime = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+      const bTime = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+      return aTime - bTime;
+    });
 
     // Group messages by date
     const groupedMessages: {
@@ -339,7 +344,9 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
     }[] = [];
 
     sortedMessages.forEach((msg, index) => {
-      const msgDate = new Date(msg.createdAt);
+      if (!msg.timestamp) return;
+      
+      const msgDate = new Date(msg.timestamp);
       const formattedDate = formatChatDate(msgDate);
       const formattedTime = formatChatTime(msgDate);
       
