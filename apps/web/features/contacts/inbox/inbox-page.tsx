@@ -548,23 +548,6 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
             isSelected={selectedChat === 'ai'}
             onClick={() => setSelectedChat('ai')}
           />
-          <ChatListItem
-            name="Asad"
-            lastMessage="Let me check that for you"
-            time="2m ago"
-            isOnline={true}
-            unreadCount={3}
-            isSelected={selectedChat === 'asad'}
-            onClick={() => setSelectedChat('asad')}
-          />
-          <ChatListItem
-            name="Saad"
-            lastMessage="The issue has been resolved"
-            time="1h ago"
-            isOnline={false}
-            isSelected={selectedChat === 'saad'}
-            onClick={() => setSelectedChat('saad')}
-          />
         </VStack>
       </Box>
 
