@@ -1,9 +1,8 @@
-import { z } from "zod";
+import { z } from 'zod'
 import { and, eq } from "drizzle-orm";
-import { createTRPCRouter, protectedProcedure, workspaceProcedure } from "#trpc";
+import { createTRPCRouter, workspaceProcedure } from "#trpc";
 import { db } from "@acme/db";
 import { chatHistory } from "../../../db/src/chat/chat.sql";
-import { workspaces } from "../../../db/src/workspaces/workspaces.sql";
 import { v4 as uuidv4 } from 'uuid';
 import { generateAIResponse, type ChatMessage } from '../../../../apps/web/lib/ai/assistant';
 

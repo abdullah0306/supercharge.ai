@@ -18,8 +18,8 @@ import { Script } from './script'
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Muhasaba AI",
-    default: "Muhasaba AI",
+    template: "%s | SuperCharge AI",
+    default: "SuperCharge AI",
   },
   icons: {
     icon: '/favicons/favicon-32x32.png',

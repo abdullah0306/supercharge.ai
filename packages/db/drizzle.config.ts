@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv'
 import { defineConfig } from 'drizzle-kit'
-import path from 'node:path'
+
 
 dotenv.config({ path: ['../../.env', '../../.env.local'] })
 

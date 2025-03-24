@@ -16,11 +16,10 @@ import {
   useToast,
   Spinner,
 } from '@chakra-ui/react'
-import { FiMessageSquare, FiBox, FiMoreVertical, FiSearch, FiPaperclip, FiSmile } from 'react-icons/fi'
+import { FiMessageSquare, FiBox, FiMoreVertical, FiSearch} from 'react-icons/fi'
 import { api } from '#lib/trpc/react'
 import { v4 as uuidv4 } from 'uuid'
-import { useParams, usePathname } from 'next/navigation'
-import { useCurrentUser } from '#features/common/hooks/use-current-user';
+import { useParams } from 'next/navigation'
 
 // Chat message component
 interface ChatMessageProps {
@@ -29,31 +28,35 @@ interface ChatMessageProps {
   isOutgoing: boolean
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ content, timestamp, isOutgoing }) => (
-  <Flex 
-    justify={isOutgoing ? "flex-end" : "flex-start"} 
-    mb={4}
-    mx={4}
-  >
-    <Box
-      maxW="70%"
-      bg={isOutgoing ? "blue.500" : useColorModeValue('gray.100', 'gray.700')}
-      color={isOutgoing ? "white" : undefined}
-      p={4}
-      borderRadius="lg"
-      boxShadow="sm"
+const ChatMessage: React.FC<ChatMessageProps> = ({ content, timestamp, isOutgoing }) => {
+  const messageBg = useColorModeValue('gray.100', 'gray.700');
+  
+  return (
+    <Flex 
+      justify={isOutgoing ? "flex-end" : "flex-start"} 
+      mb={4}
+      mx={4}
     >
-      <Text>{content}</Text>
-      <Text 
-        fontSize="xs" 
-        color={isOutgoing ? "whiteAlpha.800" : "gray.500"} 
-        mt={1}
+      <Box
+        maxW="70%"
+        bg={isOutgoing ? "blue.500" : messageBg}
+        color={isOutgoing ? "white" : undefined}
+        p={4}
+        borderRadius="lg"
+        boxShadow="sm"
       >
-        {timestamp}
-      </Text>
-    </Box>
-  </Flex>
-);
+        <Text>{content}</Text>
+        <Text 
+          fontSize="xs" 
+          color={isOutgoing ? "whiteAlpha.800" : "gray.500"} 
+          mt={1}
+        >
+          {timestamp}
+        </Text>
+      </Box>
+    </Flex>
+  );
+};
 
 // Chat list item component
 interface ChatListItemProps {
@@ -79,6 +82,8 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
 }) => {
   const bg = useColorModeValue('white', 'gray.800')
   const selectedBg = useColorModeValue('gray.100', 'gray.700')
+  const itemBorderColor = useColorModeValue('gray.100', 'gray.700')
+  const avatarBorderColor = useColorModeValue('white', 'gray.800')
 
   return (
     <Flex
@@ -88,7 +93,7 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
       _hover={{ bg: selectedBg }}
       onClick={onClick}
       borderBottom="1px"
-      borderColor={useColorModeValue('gray.100', 'gray.700')}
+      borderColor={itemBorderColor}
     >
       <Box position="relative">
         <Avatar name={name} src={avatar} size="md" />
@@ -102,7 +107,7 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
             bg="green.500"
             borderRadius="full"
             border="2px"
-            borderColor={useColorModeValue('white', 'gray.800')}
+            borderColor={avatarBorderColor}
           />
         )}
       </Box>
@@ -160,7 +165,6 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
   const [selectedChat, setSelectedChat] = React.useState<string | null>(null)
   const [messageInput, setMessageInput] = React.useState('')
   const [conversationId] = React.useState<string>(uuidv4())
-  const [isLoading, setIsLoading] = React.useState(false)
   const [isAILoading, setIsAILoading] = React.useState(false)
   const [isWelcomeLoading, setIsWelcomeLoading] = React.useState(true)
   // Fetch user session first
@@ -169,8 +173,10 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
     placeholderData: null
   });
 
-  // Derive session from user data
-  const session = sessionData ? { user: sessionData } : null;
+  // Wrap session initialization in useMemo
+  const session = React.useMemo(() => 
+    sessionData ? { user: sessionData } : null
+  , [sessionData]);
 
   // Log user information for debugging
   React.useEffect(() => {
@@ -192,7 +198,7 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
   );
 
   const sendMessageMutation = api.chat.sendMessage.useMutation({
-    onSuccess: async (response) => {
+    onSuccess: async () => {
       setMessageInput('');
       await refetchChat();
     },
@@ -223,7 +229,6 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
       return;
     }
 
-    setIsLoading(true);
     setIsAILoading(true);
     
     try {
@@ -246,14 +251,13 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
         isClosable: true,
       });
     } finally {
-      setIsLoading(false);
       setIsAILoading(false);
     }
   };
 
   // Handle initial welcome message and loading state
   React.useEffect(() => {
-    if (chatHistory && chatHistory.length === 0) {
+    if (chatHistory && chatHistory.length === 0 && workspaceId) {
       const mutation = api.chat.sendMessage.useMutation({
         onSuccess: async (response: any) => {
           await refetchChat();
@@ -265,22 +269,22 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
       });
 
       mutation.mutate({
-        workspaceId: workspaceId ?? '',
-        conversationId: conversationId,
+        workspaceId,
+        conversationId,
         message: "Hello! How can I help you today?",
       });
     }
     setIsWelcomeLoading(false);
-  }, [chatHistory, workspaceId, conversationId]);
+  }, [chatHistory, workspaceId, conversationId, refetchChat]);
 
   const toast = useToast();
 
   // Initialize chat when selecting AI Assistant
   React.useEffect(() => {
     if (selectedChat === 'ai' && workspaceId) {
-      refetchChat()
+      refetchChat();
     }
-  }, [selectedChat, workspaceId])
+  }, [selectedChat, workspaceId, refetchChat]);
 
   // Utility function to format dates like WhatsApp
   const formatChatDate = (date: Date) => {
@@ -326,6 +330,14 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
     isTimeSeparator?: boolean;
   };
 
+  // Move useColorModeValue hooks to the top level
+  const bgColor = useColorModeValue('gray.50', 'gray.900');
+  const chatListBg = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.600');
+  const searchBg = useColorModeValue('gray.100', 'gray.700');
+  const chatAreaBg = useColorModeValue('gray.100', 'gray.900');
+  const messageInputBg = useColorModeValue('gray.100', 'gray.700');
+
   // Transform chat history into message format with proper typing
   const aiMessages = React.useMemo(() => {
     if (!chatHistory || chatHistory.length === 0) return []
@@ -343,7 +355,7 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
       messages: Message[];
     }[] = [];
 
-    sortedMessages.forEach((msg, index) => {
+    sortedMessages.forEach((msg) => {
       if (!msg.timestamp) return;
       
       const msgDate = new Date(msg.timestamp);
@@ -380,7 +392,7 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
       const timeGroupedMessages: Message[] = [];
       let currentTimeGroup = '';
 
-      dateGroup.messages.forEach((msg, index) => {
+      dateGroup.messages.forEach((msg) => {
         // Add time separator if time group changes or it's a welcome message
         if (msg.timeGroup !== currentTimeGroup || msg.isWelcomeMessage) {
           currentTimeGroup = msg.timeGroup;
@@ -492,11 +504,11 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
   }
 
   return (
-    <Flex h="100vh" bg={useColorModeValue('gray.50', 'gray.900')} overflow="hidden">
+    <Flex h="100vh" bg={bgColor} overflow="hidden">
       {/* Left sidebar with chat list */}
-      <Box w="350px" bg={useColorModeValue('white', 'gray.800')} borderRight="1px" borderColor={useColorModeValue('gray.200', 'gray.600')}>
+      <Box w="350px" bg={chatListBg} borderRight="1px" borderColor={borderColor}>
         {/* Header */}
-        <Flex p={4} justify="space-between" align="center" borderBottom="1px" borderColor={useColorModeValue('gray.200', 'gray.600')}>
+        <Flex p={4} justify="space-between" align="center" borderBottom="1px" borderColor={borderColor}>
           <Text fontSize="xl" fontWeight="bold">
             Chats
           </Text>
@@ -521,7 +533,7 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
           <Flex
             as="form"
             align="center"
-            bg={useColorModeValue('gray.100', 'gray.700')}
+            bg={searchBg}
             rounded="full"
             px={4}
             py={2}
@@ -548,36 +560,19 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
             isSelected={selectedChat === 'ai'}
             onClick={() => setSelectedChat('ai')}
           />
-          <ChatListItem
-            name="Asad"
-            lastMessage="Let me check that for you"
-            time="2m ago"
-            isOnline={true}
-            unreadCount={3}
-            isSelected={selectedChat === 'asad'}
-            onClick={() => setSelectedChat('asad')}
-          />
-          <ChatListItem
-            name="Saad"
-            lastMessage="The issue has been resolved"
-            time="1h ago"
-            isOnline={false}
-            isSelected={selectedChat === 'saad'}
-            onClick={() => setSelectedChat('saad')}
-          />
         </VStack>
       </Box>
 
       {/* Right side chat area */}
-      <Flex flex={1} direction="column" bg={useColorModeValue('gray.100', 'gray.900')} overflow="hidden">
+      <Flex flex={1} direction="column" bg={chatAreaBg} overflow="hidden">
         {selectedChat ? (
           <>
             {/* Chat header */}
             <Flex
               p={4}
-              bg={useColorModeValue('white', 'gray.800')}
+              bg={chatListBg}
               borderBottom="1px"
-              borderColor={useColorModeValue('gray.200', 'gray.600')}
+              borderColor={borderColor}
               align="center"
             >
               <Avatar name={selectedChat} size="sm" />
@@ -662,9 +657,9 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
             {/* Message input */}
             <Flex
               p={4}
-              bg={useColorModeValue('white', 'gray.800')}
+              bg={chatListBg}
               borderTop="1px"
-              borderColor={useColorModeValue('gray.200', 'gray.600')}
+              borderColor={borderColor}
               align="center"
             >
               <Input
@@ -677,7 +672,7 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
                     handleSendMessage()
                   }
                 }}
-                bg={useColorModeValue('gray.100', 'gray.700')}
+                bg={messageInputBg}
                 borderRadius="full"
               />
               <Button

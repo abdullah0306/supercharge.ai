@@ -1,38 +1,42 @@
 'use client'
 
 import {
-  Card,
-  CardBody,
   Box,
-  Heading,
+  Flex,
   Text,
-  SimpleGrid,
   Button,
   Icon,
-  Avatar,
-  Flex,
+  HStack,
   Stack,
+  Card,
+  CardBody,
+  SimpleGrid,
+  Heading,
+  Select,
   Table,
   Thead,
   Tbody,
   Tr,
   Th,
   Td,
-  Select,
-  HStack,
 } from '@chakra-ui/react'
 import {
-  ErrorPage,
   Page,
   PageBody,
 } from '@saas-ui-pro/react'
-import { LoadingOverlay, LoadingSpinner } from '@saas-ui/react'
 import { LuPlus, LuArrowRight, LuUser } from 'react-icons/lu'
 
-import { WorkspacePageProps } from '#lib/create-page'
-import { api } from '#lib/trpc/react'
+interface DashboardPageProps {
+  params: {
+    workspace: string
+  }
+}
 
-export function DashboardPage(props: WorkspacePageProps) {
+export const DashboardPage: React.FC<DashboardPageProps> = ({ params: { workspace } }) => {
+  // We have the workspace ID available if needed later
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const workspaceId = workspace;
+
   // Assistant cards data
   const assistants = [
     {

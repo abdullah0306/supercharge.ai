@@ -84,7 +84,7 @@ export function SettingsOverviewPage() {
           <SimpleGrid columns={[1, null, 3]} spacing={4}>
             <SupportCard
               title="Start Guide"
-              description="Read how to get started with Muhasaba AI."
+              description="Read how to get started with SuperCharge AI."
               icon={LuCircleHelp}
               href="https://docs.muhasaba.ai/getting-started"
             />

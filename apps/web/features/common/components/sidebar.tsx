@@ -9,8 +9,6 @@ import {
   Spacer,
   Stack,
   useBreakpointValue,
-  Icon,
-  Collapse,
 } from '@chakra-ui/react'
 import {
   Command,
@@ -37,19 +35,9 @@ import {
   LuHouse,
   LuPlus,
   LuSearch,
-  LuWallet,
-  LuChartArea,
-  LuReceipt,
   LuUser,
-  LuBanknote,
-  LuFileText,
-  LuLayoutGrid,
-  LuTrendingUp,
-  LuClipboardList,
-  LuChartPie,
   LuInbox,
 } from 'react-icons/lu'
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa' // Import arrow icons
 
 import { useActivePath } from '@acme/next'
 import { useHelpCenter } from '@acme/ui/help-center'
@@ -80,30 +68,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
     setUserSettings('sidebarWidth', width)
   }
 
-  const [isAccountingOpen, setIsAccountingOpen] = React.useState(false)
-  const [isReportsOpen, setIsReportsOpen] = React.useState(false)
 
-  // Track the active path to check if any subpage under Accounting is active
-  const isAccountsActive = useActivePath('accounts', { end: false })
-  const isIdentityActive = useActivePath('identity', { end: false })
-  const isTransactionActive = useActivePath('transaction', { end: false })
-  const isCashflowActive = useActivePath('cashflow', { end: false })
-  const isProfitLossActive = useActivePath('profit-loss', { end: false })
-  const isBalanceSheetActive = useActivePath('balance-sheet', { end: false })
-  const isCashflowStatementActive = useActivePath('cashflow-statement', { end: false })
-
-  // Set the parent item to be open if any subpage is active
-  React.useEffect(() => {
-    if (isAccountsActive || isIdentityActive || isTransactionActive || isCashflowActive) {
-      setIsAccountingOpen(true)
-    }
-  }, [isAccountsActive, isIdentityActive, isTransactionActive, isCashflowActive])
-
-  React.useEffect(() => {
-    if (isProfitLossActive || isBalanceSheetActive || isCashflowStatementActive) {
-      setIsReportsOpen(true)
-    }
-  }, [isProfitLossActive, isBalanceSheetActive, isCashflowStatementActive])
 
   return (
     <Resizer
@@ -168,105 +133,6 @@ export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
                 hotkey="navigation.assistants"
               />
 
-
-              {/* Parent Accounting Item */}
-              <NavItem
-                icon={<LuBanknote />}
-                onClick={() => setIsAccountingOpen(!isAccountingOpen)}
-                display="flex"
-                alignItems="center"
-              >
-                Accounting
-                <Box ml="auto">
-                  <Icon
-                    as={isAccountingOpen ? FaChevronDown : FaChevronUp}
-                    boxSize={3}
-                    transform={isAccountingOpen ? 'rotate(0deg)' : 'rotate(90deg)'}
-                    transition="transform 0.3s ease"
-                    color="gray.600"
-                  />
-                </Box>
-              </NavItem>
-
-              {/* Accounting subitems */}
-              <Collapse in={isAccountingOpen}>
-                <Stack pl={4}>
-                  <AppSidebarLink
-                    href={usePath('accounts')}
-                    isActive={isAccountsActive}
-                    label="Accounts"
-                    icon={<LuLayoutGrid />}
-                    hotkey="navigation.accounts"
-                  />
-                  <AppSidebarLink
-                    href={usePath('identity')}
-                    isActive={isIdentityActive}
-                    label="Identity"
-                    icon={<LuUser />}
-                    hotkey="navigation.identity"
-                  />
-                  <AppSidebarLink
-                    href={usePath('transaction')}
-                    isActive={isTransactionActive}
-                    label="Transaction"
-                    icon={<LuReceipt />}
-                    hotkey="navigation.transaction"
-                  />
-                  <AppSidebarLink
-                    href={usePath('cashflow')}
-                    isActive={isCashflowActive}
-                    label="Cashflow"
-                    icon={<LuChartArea />}
-                    hotkey="navigation.cashflow"
-                  />
-                </Stack>
-              </Collapse>
-
-              {/* Parent Reports Item */}
-              <NavItem
-                icon={<LuFileText />}
-                onClick={() => setIsReportsOpen(!isReportsOpen)}
-                display="flex"
-                alignItems="center"
-              >
-                Reports
-                <Box ml="auto">
-                  <Icon
-                    as={isReportsOpen ? FaChevronDown : FaChevronUp}
-                    boxSize={3}
-                    transform={isReportsOpen ? 'rotate(0deg)' : 'rotate(90deg)'}
-                    transition="transform 0.3s ease"
-                    color="gray.600"
-                  />
-                </Box>
-              </NavItem>
-
-              {/* Reports subitems */}
-              <Collapse in={isReportsOpen}>
-                <Stack pl={4}>
-                  <AppSidebarLink
-                    href={usePath('profit-loss')}
-                    isActive={isProfitLossActive}
-                    label="Profit & Loss"
-                    icon={<LuTrendingUp />}
-                    hotkey="navigation.profitLoss"
-                  />
-                  <AppSidebarLink
-                    href={usePath('balance-sheet')}
-                    isActive={isBalanceSheetActive}
-                    label="Balance Sheet"
-                    icon={<LuClipboardList />}
-                    hotkey="navigation.balanceSheet"
-                  />
-                  <AppSidebarLink
-                    href={usePath('cashflow-statement')}
-                    isActive={isCashflowStatementActive}
-                    label="Cashflow Statement"
-                    icon={<LuChartPie />}
-                    hotkey="navigation.cashflowStatement"
-                  />
-                </Stack>
-              </Collapse>
             </NavGroup>
 
             {!isCompact && <AppSidebarTags />}
