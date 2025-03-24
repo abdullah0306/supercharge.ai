@@ -165,7 +165,6 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
   const [selectedChat, setSelectedChat] = React.useState<string | null>(null)
   const [messageInput, setMessageInput] = React.useState('')
   const [conversationId] = React.useState<string>(uuidv4())
-  const [isLoading, setIsLoading] = React.useState(false)
   const [isAILoading, setIsAILoading] = React.useState(false)
   const [isWelcomeLoading, setIsWelcomeLoading] = React.useState(true)
   // Fetch user session first
