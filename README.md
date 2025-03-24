@@ -1,8 +1,8 @@
-# Muhasaba AI - Financial Management System
+# SuperCharge AI - Financial Management System
 
 ## About
 
-Muhasaba AI is a cutting-edge financial management system that combines Islamic finance principles with modern artificial intelligence. Our platform helps businesses and individuals manage their finances more effectively through smart bank integrations, automated bookkeeping, and Shariah-compliant financial insights.
+SuperCharge AI is a cutting-edge financial management system that combines Islamic finance principles with modern artificial intelligence. Our platform helps businesses and individuals manage their finances more effectively through smart bank integrations, automated bookkeeping, and Shariah-compliant financial insights.
 
 ## Features
 
@@ -17,11 +17,11 @@ Muhasaba AI is a cutting-edge financial management system that combines Islamic 
 
 ## Getting Started
 
-To get started with Muhasaba AI, follow these steps:
+To get started with SuperCharge AI, follow these steps:
 
 ```bash
 # Clone the repository
-git clone https://github.com/muhasaba/muhasaba-ai.git
+git clone https://github.com/SuperCharge/SuperCharge-ai.git
 
 # Install dependencies
 yarn install
@@ -49,20 +49,20 @@ We welcome contributions from the community. Please read our [Contributing Guide
 
 ## Social Media
 
-- Twitter: [@muhasabaai](https://twitter.com/muhasabaai)
-- LinkedIn: [Muhasaba AI](https://linkedin.com/company/muhasabaai)
-- Instagram: [@muhasabaai](https://instagram.com/muhasabaai)
+- Twitter: [@SuperChargeai](https://twitter.com/SuperChargeai)
+- LinkedIn: [SuperCharge AI](https://linkedin.com/company/SuperChargeai)
+- Instagram: [@SuperChargeai](https://instagram.com/SuperChargeai)
 
 ## Testimonials
 
-> "Muhasaba AI has transformed how we manage our Islamic finance operations. The Shariah-compliant insights and automated Zakat calculations have been invaluable." - Abdullah Rahman, Islamic Finance Advisor
+> "SuperCharge AI has transformed how we manage our Islamic finance operations. The Shariah-compliant insights and automated Zakat calculations have been invaluable." - Abdullah Rahman, Islamic Finance Advisor
 
-> "As a Muslim business owner, finding a financial management tool that aligns with Islamic principles was crucial. Muhasaba AI delivers exactly what we needed." - Fatima Hassan, CEO of Halal Ventures
+> "As a Muslim business owner, finding a financial management tool that aligns with Islamic principles was crucial. SuperCharge AI delivers exactly what we needed." - Fatima Hassan, CEO of Halal Ventures
 
 ## Support
 
-For support, please email support@muhasaba.ai or visit our [Help Center](https://help.muhasaba.ai).
+For support, please email support@SuperCharge.ai or visit our [Help Center](https://help.SuperCharge.ai).
 
 ## License
 
-Copyright © 2024 Muhasaba AI. All rights reserved.
+Copyright © 2024 SuperCharge AI. All rights reserved.
