@@ -47,6 +47,7 @@ import {
   LuTrendingUp,
   LuClipboardList,
   LuChartPie,
+  LuInbox,
 } from 'react-icons/lu'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa' // Import arrow icons
 
@@ -64,7 +65,7 @@ import { AppSidebarTags } from './sidebar-tags'
 import { UserMenu } from './user-menu'
 import { WorkspacesMenu } from './workspaces-menu'
 
-export interface AppSidebarProps extends SidebarProps {}
+export interface AppSidebarProps extends SidebarProps { }
 
 export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
   const modals = useModals()
@@ -150,7 +151,8 @@ export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
                 icon={<LuHouse />}
                 hotkey="navigation.dashboard"
               />
-              {/* <AppSidebarLink
+
+              <AppSidebarLink
                 href={usePath('inbox')}
                 isActive={useActivePath('inbox', { end: false })}
                 label="Inbox"
@@ -158,20 +160,14 @@ export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
                 icon={<LuInbox />}
                 hotkey="navigation.inbox"
               />
+
               <AppSidebarLink
-                href={usePath('contacts')}
-                isActive={useActivePath('contacts', { end: false })}
-                label="Contacts"
-                icon={<LuSquareUser />}
-                hotkey="navigation.contacts"
-              /> */}
-              <AppSidebarLink
-                href={usePath('bank-integrations')}
-                isActive={useActivePath('bank-integrations', { end: false })}
-                label="Bank Integrations"
-                icon={<LuWallet />}
-                hotkey="navigation.bankIntegrations"
+                href={usePath('assistants')}
+                label="Assistants"
+                icon={<LuUser />}
+                hotkey="navigation.assistants"
               />
+
 
               {/* Parent Accounting Item */}
               <NavItem
