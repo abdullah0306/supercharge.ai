@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { and, eq } from "drizzle-orm";
-import { createTRPCRouter, protectedProcedure, workspaceProcedure } from "#trpc";
+import { createTRPCRouter, workspaceProcedure } from "#trpc";
 import { db } from "@acme/db";
 import { chatHistory } from "../../../db/src/chat/chat.sql";
 import { v4 as uuidv4 } from 'uuid';

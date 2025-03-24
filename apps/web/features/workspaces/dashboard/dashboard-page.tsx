@@ -26,9 +26,6 @@ import {
 } from '@saas-ui-pro/react'
 import { LuPlus, LuArrowRight, LuUser } from 'react-icons/lu'
 
-import { WorkspacePageProps } from '#lib/create-page'
-import { api } from '#lib/trpc/react'
-
 export const DashboardPage = () => {
   // Assistant cards data
   const assistants = [

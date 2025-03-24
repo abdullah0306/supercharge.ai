@@ -83,6 +83,8 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
 }) => {
   const bg = useColorModeValue('white', 'gray.800')
   const selectedBg = useColorModeValue('gray.100', 'gray.700')
+  const itemBorderColor = useColorModeValue('gray.100', 'gray.700')
+  const avatarBorderColor = useColorModeValue('white', 'gray.800')
 
   return (
     <Flex
@@ -92,7 +94,7 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
       _hover={{ bg: selectedBg }}
       onClick={onClick}
       borderBottom="1px"
-      borderColor={useColorModeValue('gray.100', 'gray.700')}
+      borderColor={itemBorderColor}
     >
       <Box position="relative">
         <Avatar name={name} src={avatar} size="md" />
@@ -106,7 +108,7 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
             bg="green.500"
             borderRadius="full"
             border="2px"
-            borderColor={useColorModeValue('white', 'gray.800')}
+            borderColor={avatarBorderColor}
           />
         )}
       </Box>
@@ -229,7 +231,6 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
       return;
     }
 
-    setIsLoading(true);
     setIsAILoading(true);
     
     try {
@@ -252,7 +253,6 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
         isClosable: true,
       });
     } finally {
-      setIsLoading(false);
       setIsAILoading(false);
     }
   };
