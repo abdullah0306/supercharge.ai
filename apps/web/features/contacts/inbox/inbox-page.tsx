@@ -29,31 +29,35 @@ interface ChatMessageProps {
   isOutgoing: boolean
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ content, timestamp, isOutgoing }) => (
-  <Flex 
-    justify={isOutgoing ? "flex-end" : "flex-start"} 
-    mb={4}
-    mx={4}
-  >
-    <Box
-      maxW="70%"
-      bg={isOutgoing ? "blue.500" : useColorModeValue('gray.100', 'gray.700')}
-      color={isOutgoing ? "white" : undefined}
-      p={4}
-      borderRadius="lg"
-      boxShadow="sm"
+const ChatMessage: React.FC<ChatMessageProps> = ({ content, timestamp, isOutgoing }) => {
+  const messageBg = useColorModeValue('gray.100', 'gray.700');
+  
+  return (
+    <Flex 
+      justify={isOutgoing ? "flex-end" : "flex-start"} 
+      mb={4}
+      mx={4}
     >
-      <Text>{content}</Text>
-      <Text 
-        fontSize="xs" 
-        color={isOutgoing ? "whiteAlpha.800" : "gray.500"} 
-        mt={1}
+      <Box
+        maxW="70%"
+        bg={isOutgoing ? "blue.500" : messageBg}
+        color={isOutgoing ? "white" : undefined}
+        p={4}
+        borderRadius="lg"
+        boxShadow="sm"
       >
-        {timestamp}
-      </Text>
-    </Box>
-  </Flex>
-);
+        <Text>{content}</Text>
+        <Text 
+          fontSize="xs" 
+          color={isOutgoing ? "whiteAlpha.800" : "gray.500"} 
+          mt={1}
+        >
+          {timestamp}
+        </Text>
+      </Box>
+    </Flex>
+  );
+};
 
 // Chat list item component
 interface ChatListItemProps {
@@ -169,8 +173,10 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
     placeholderData: null
   });
 
-  // Derive session from user data
-  const session = sessionData ? { user: sessionData } : null;
+  // Wrap session initialization in useMemo
+  const session = React.useMemo(() => 
+    sessionData ? { user: sessionData } : null
+  , [sessionData]);
 
   // Log user information for debugging
   React.useEffect(() => {
@@ -192,7 +198,7 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
   );
 
   const sendMessageMutation = api.chat.sendMessage.useMutation({
-    onSuccess: async (response) => {
+    onSuccess: async () => {
       setMessageInput('');
       await refetchChat();
     },
