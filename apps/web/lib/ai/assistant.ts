@@ -2,12 +2,29 @@ import OpenAI from 'openai';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '@acme/db';
 import { chatHistory } from '../../../../packages/db/src/chat/chat.sql';
+import * as dotenv from 'dotenv';
+
+// Load environment variables
+console.log('Loading environment variables...');
+dotenv.config({ path: '.env' });
+console.log('Environment variables loaded');
+
+// Log the available environment variables (without showing the actual key)
+console.log('Available environment variables:', Object.keys(process.env));
 
 // Initialize OpenAI with browser support
 const openai = new OpenAI({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true
 });
+
+// Ensure API key is configured
+if (!openai.apiKey) {
+  console.error('OpenAI API key is not configured');
+  console.error('Expected environment variable: NEXT_PUBLIC_OPENAI_API_KEY');
+  console.error('Current value:', process.env.NEXT_PUBLIC_OPENAI_API_KEY);
+  throw new Error('OpenAI API key is required');
+}
 
 export interface ChatMessage {
   conversation_id: string;
@@ -17,10 +34,6 @@ export interface ChatMessage {
 
 export const generateAIResponse = async (messages: ChatMessage[]): Promise<string> => {
   try {
-    if (!openai.apiKey) {
-      throw new Error('OpenAI API key is not configured');
-    }
-
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: messages.map(msg => ({
