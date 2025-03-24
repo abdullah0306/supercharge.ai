@@ -15,7 +15,7 @@ export const Testimonial = () => {
             Abdullah Rahman
           </Text>
           <Text color="whiteAlpha.700" fontSize="md">
-            Islamic Finance Advisor at <Link href="https://muhasaba.ai">SuperCharge AI</Link>
+            Islamic Finance Advisor at <Link href="https://supercharge.ai">SuperCharge AI</Link>
           </Text>
         </Box>
       </HStack>

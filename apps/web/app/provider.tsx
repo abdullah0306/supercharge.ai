@@ -6,7 +6,7 @@ import { TRPCProvider } from '#lib/trpc/trpc-provider'
 
 /**
  * This is the root context provider for the application.
- * You can add context providers here that should be available to all pages.
+ * You can add context providers here that should be available to all pages. 
  */
 export function Provider({
   children,
