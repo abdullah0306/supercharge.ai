@@ -21,7 +21,7 @@ export default auth((req) => {
 })
 
 export const config = {
-  // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
+  // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher...
   matcher: [
     '/((?!api|_next/static|_next/image|static|img|favicons|favicon.ico|sitemap.xml|robots.txt$).*)',
   ],
