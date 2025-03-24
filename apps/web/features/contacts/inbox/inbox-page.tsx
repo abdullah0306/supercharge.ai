@@ -253,7 +253,7 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
 
   // Handle initial welcome message and loading state
   React.useEffect(() => {
-    if (chatHistory && chatHistory.length === 0) {
+    if (chatHistory && chatHistory.length === 0 && workspaceId) {
       const mutation = api.chat.sendMessage.useMutation({
         onSuccess: async (response: any) => {
           await refetchChat();
@@ -265,22 +265,22 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
       });
 
       mutation.mutate({
-        workspaceId: workspaceId ?? '',
-        conversationId: conversationId,
+        workspaceId,
+        conversationId,
         message: "Hello! How can I help you today?",
       });
     }
     setIsWelcomeLoading(false);
-  }, [chatHistory, workspaceId, conversationId]);
+  }, [chatHistory, workspaceId, conversationId, refetchChat]);
 
   const toast = useToast();
 
   // Initialize chat when selecting AI Assistant
   React.useEffect(() => {
     if (selectedChat === 'ai' && workspaceId) {
-      refetchChat()
+      refetchChat();
     }
-  }, [selectedChat, workspaceId])
+  }, [selectedChat, workspaceId, refetchChat]);
 
   // Utility function to format dates like WhatsApp
   const formatChatDate = (date: Date) => {
@@ -326,6 +326,14 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
     isTimeSeparator?: boolean;
   };
 
+  // Move useColorModeValue hooks to the top level
+  const bgColor = useColorModeValue('gray.50', 'gray.900');
+  const chatListBg = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.600');
+  const searchBg = useColorModeValue('gray.100', 'gray.700');
+  const chatAreaBg = useColorModeValue('gray.100', 'gray.900');
+  const messageInputBg = useColorModeValue('gray.100', 'gray.700');
+
   // Transform chat history into message format with proper typing
   const aiMessages = React.useMemo(() => {
     if (!chatHistory || chatHistory.length === 0) return []
@@ -343,7 +351,7 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
       messages: Message[];
     }[] = [];
 
-    sortedMessages.forEach((msg, index) => {
+    sortedMessages.forEach((msg) => {
       if (!msg.timestamp) return;
       
       const msgDate = new Date(msg.timestamp);
@@ -380,7 +388,7 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
       const timeGroupedMessages: Message[] = [];
       let currentTimeGroup = '';
 
-      dateGroup.messages.forEach((msg, index) => {
+      dateGroup.messages.forEach((msg) => {
         // Add time separator if time group changes or it's a welcome message
         if (msg.timeGroup !== currentTimeGroup || msg.isWelcomeMessage) {
           currentTimeGroup = msg.timeGroup;
@@ -492,11 +500,11 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
   }
 
   return (
-    <Flex h="100vh" bg={useColorModeValue('gray.50', 'gray.900')} overflow="hidden">
+    <Flex h="100vh" bg={bgColor} overflow="hidden">
       {/* Left sidebar with chat list */}
-      <Box w="350px" bg={useColorModeValue('white', 'gray.800')} borderRight="1px" borderColor={useColorModeValue('gray.200', 'gray.600')}>
+      <Box w="350px" bg={chatListBg} borderRight="1px" borderColor={borderColor}>
         {/* Header */}
-        <Flex p={4} justify="space-between" align="center" borderBottom="1px" borderColor={useColorModeValue('gray.200', 'gray.600')}>
+        <Flex p={4} justify="space-between" align="center" borderBottom="1px" borderColor={borderColor}>
           <Text fontSize="xl" fontWeight="bold">
             Chats
           </Text>
@@ -521,7 +529,7 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
           <Flex
             as="form"
             align="center"
-            bg={useColorModeValue('gray.100', 'gray.700')}
+            bg={searchBg}
             rounded="full"
             px={4}
             py={2}
@@ -552,15 +560,15 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
       </Box>
 
       {/* Right side chat area */}
-      <Flex flex={1} direction="column" bg={useColorModeValue('gray.100', 'gray.900')} overflow="hidden">
+      <Flex flex={1} direction="column" bg={chatAreaBg} overflow="hidden">
         {selectedChat ? (
           <>
             {/* Chat header */}
             <Flex
               p={4}
-              bg={useColorModeValue('white', 'gray.800')}
+              bg={chatListBg}
               borderBottom="1px"
-              borderColor={useColorModeValue('gray.200', 'gray.600')}
+              borderColor={borderColor}
               align="center"
             >
               <Avatar name={selectedChat} size="sm" />
@@ -645,9 +653,9 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
             {/* Message input */}
             <Flex
               p={4}
-              bg={useColorModeValue('white', 'gray.800')}
+              bg={chatListBg}
               borderTop="1px"
-              borderColor={useColorModeValue('gray.200', 'gray.600')}
+              borderColor={borderColor}
               align="center"
             >
               <Input
@@ -660,7 +668,7 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
                     handleSendMessage()
                   }
                 }}
-                bg={useColorModeValue('gray.100', 'gray.700')}
+                bg={messageInputBg}
                 borderRadius="full"
               />
               <Button
