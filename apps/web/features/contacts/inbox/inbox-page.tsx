@@ -16,11 +16,10 @@ import {
   useToast,
   Spinner,
 } from '@chakra-ui/react'
-import { FiMessageSquare, FiBox, FiMoreVertical, FiSearch, FiPaperclip, FiSmile } from 'react-icons/fi'
+import { FiMessageSquare, FiBox, FiMoreVertical, FiSearch} from 'react-icons/fi'
 import { api } from '#lib/trpc/react'
 import { v4 as uuidv4 } from 'uuid'
-import { useParams, usePathname } from 'next/navigation'
-import { useCurrentUser } from '#features/common/hooks/use-current-user';
+import { useParams } from 'next/navigation'
 
 // Chat message component
 interface ChatMessageProps {
