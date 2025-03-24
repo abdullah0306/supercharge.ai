@@ -32,7 +32,11 @@ interface DashboardPageProps {
   }
 }
 
-export const DashboardPage: React.FC<DashboardPageProps> = ({}) => {
+export const DashboardPage: React.FC<DashboardPageProps> = ({ params: { workspace } }) => {
+  // We have the workspace ID available if needed later
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const workspaceId = workspace;
+
   // Assistant cards data
   const assistants = [
     {
