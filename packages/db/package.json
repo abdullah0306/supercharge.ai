@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
-    "db:push": "drizzle-kit push",
+    "db:push": "drizzle-kit push:pg --force",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:check": "drizzle-kit check",

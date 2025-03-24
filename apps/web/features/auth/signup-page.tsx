@@ -82,8 +82,8 @@ export const SignupPage = () => {
             disabled={isPending || isSuccess}
             sx={{
               'input:focus-visible, select:focus-visible': {
-                borderColor: '#1AB294 !important',
-                boxShadow: '0 0 0 1px #1AB294 !important',
+                borderColor: '#2348B7 !important',
+                boxShadow: '0 0 0 1px #2348B7 !important',
               }
             }}
           >
@@ -114,8 +114,8 @@ export const SignupPage = () => {
                   Forgot your password?
                 </Link>
 
-                <SubmitButton backgroundColor="#1AB294"
-                  _hover={{ backgroundColor: 'green.800' }}
+                <SubmitButton backgroundColor="#2348B7"
+                  _hover={{ backgroundColor: '#1647da' }}
                   color="white" loadingText="Creating account...">
                   Sign up
                 </SubmitButton>
@@ -126,13 +126,13 @@ export const SignupPage = () => {
 
         <Text color="muted" position="relative" zIndex={1}>
           Already have an account?{' '}
-          <Link href="/login" color="green.500">
+          <Link href="/login" color="#2348B7">
             Login
           </Link>
           .
         </Text>
       </Stack>
-      <Stack flex="1" bg="green.600">
+      <Stack flex="1" bg="#2348B7">
         <Center flex="1">
           <Testimonial />
         </Center>

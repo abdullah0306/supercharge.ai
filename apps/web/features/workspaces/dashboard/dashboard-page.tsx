@@ -1,365 +1,261 @@
 'use client'
 
-import { useState } from 'react'
-
 import {
-  Card,
-  CardBody,
   Box,
-  Heading,
+  Flex,
   Text,
-  SimpleGrid,
-  HStack,
-  Progress,
   Button,
   Icon,
+  HStack,
+  Stack,
+  Card,
+  CardBody,
+  SimpleGrid,
+  Heading,
+  Select,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
 } from '@chakra-ui/react'
 import {
-  ErrorPage,
   Page,
   PageBody,
-  PageHeader,
-  Toolbar,
-  ToolbarButton,
 } from '@saas-ui-pro/react'
-import { LoadingOverlay, LoadingSpinner } from '@saas-ui/react'
-import { LuChevronRight } from 'react-icons/lu'
+import { LuPlus, LuArrowRight, LuUser } from 'react-icons/lu'
 
-import {
-  DateRange,
-  DateRangePicker,
-  DateRangePresets,
-  getRangeDiff,
-  getRangeValue,
-} from '@acme/ui/date-picker'
-import { SegmentedControl } from '@acme/ui/segmented-control'
-
-import { WorkspacePageProps } from '#lib/create-page'
-import { api } from '#lib/trpc/react'
-
-import { AreaChart, BarChart } from '@saas-ui/charts'
-
-export function DashboardPage(props: WorkspacePageProps) {
-  const [range, setRange] = useState('30d')
-  const [dateRange, setDateRange] = useState(getRangeValue('30d'))
-  const onPresetChange = (preset: string) => {
-    if (preset !== 'custom') {
-      setDateRange(getRangeValue(preset as DateRangePresets))
-    }
-    setRange(preset)
+interface DashboardPageProps {
+  params: {
+    workspace: string
   }
+}
 
-  const onRangeChange = (range: DateRange) => {
-    const diff = getRangeDiff(range)
-    if ([1, 3, 7, 30].includes(diff)) {
-      setRange(`${diff}`)
-    } else {
-      setRange('custom')
-    }
+export const DashboardPage: React.FC<DashboardPageProps> = ({ params: { workspace } }) => {
+  // We have the workspace ID available if needed later
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const workspaceId = workspace;
 
-    setDateRange(range)
-  }
-
-  const { data, isLoading } = api.dashboard.get.useQuery(
+  // Assistant cards data
+  const assistants = [
     {
-      workspaceId: props.params.workspace,
-      startDate: dateRange.start.toString(),
-      endDate: dateRange.end.toString(),
+      name: 'Sales Support Assistant',
+      description: 'The Sales Support Assistant is designed to assist the sales team at SprinterSoftwareGroup by drafting...',
+      initials: 'SA'
     },
     {
-      refetchOnWindowFocus: false,
-      refetchInterval: false,
-    },
-  )
-
-  if (!isLoading && !data) {
-    return (
-      <ErrorPage
-        title="No workspace found"
-        description={`We couldn't find a workspace named ${props.params.workspace}`}
-      />
-    )
-  }
-
-  // Transaction cards data
-  const transactions = [
-    {
-      name: 'Alethid Credit Bureeau',
-      date: 'Jan 31 - Feb 4',
-      transactionId: 'Transaction ID: 419790-87850-65',
-      amount: '46.889 $'
+      name: 'Internal HR Assistant',
+      description: 'This assistant provides information and clarifications on company policies for new and existing...',
+      initials: 'IA'
     },
     {
-      name: 'Alethid Credit Bureeau',
-      date: 'Jan 31 - Feb 4',
-      transactionId: 'Transaction ID: 419790-87850-65',
-      amount: '+87,89.0 $',
-      isPositive: true
+      name: 'RFP Response Assistant',
+      description: 'This assistant is designed to help SprinterSoftwareGroup efficiently respond to Requests for Proposal...',
+      initials: 'RA'
     },
     {
-      name: 'Alethid Credit Bureeau',
-      date: 'Jan 31 - Feb 4',
-      transactionId: 'Transaction ID: 419790-87850-65',
-      amount: '46.889 $'
+      name: 'Sales Onboarding & Training Assistant',
+      description: 'This assistant is designed to facilitate the onboarding and training process for new sales employees at...',
+      initials: 'SA'
+    },
+    {
+      name: 'SprinterSoftwareGroup General Assistant',
+      description: 'A general purpose assistant with context of SprinterSoftwareGroup.',
+      initials: 'GA'
+    },
+    {
+      name: 'HR Recruitment Assistant',
+      description: 'An AI assistant designed to aid human resources employees at SprinterSoftwareGroup in managing...',
+      initials: 'HA'
+    },
+    {
+      name: 'LinkedIn Outreach Assistant',
+      description: 'This assistant helps SprinterSoftwareGroup with crafting custom, concise sales emails tailored...',
+      initials: 'LA'
+    },
+    {
+      name: 'Create New Assistant',
+      description: '',
+      isCreateNew: true
     }
   ]
 
-  const toolbar = (
-    <Toolbar className="overview-toolbar" variant="ghost">
-      {/* <ToolbarButton
-        as="a"
-        href="https://twitter.com/intent/tweet?text=Check%20out%20%40saas_js"
-        icon={<FaXTwitter />}
-        label="Share on X"
-      />
-      <ToolbarButton
-        as="a"
-        href="https://linkedin.com/share"
-        icon={<FaLinkedin />}
-        label="Share on LinkedIn"
-      /> */}
-      <ToolbarButton
-        as="a"
-        href="https://saas-ui.lemonsqueezy.com/checkout/buy/5c76854f-738a-46b8-b32d-932a97d477f5"
-        label="Get Help"
-        color="white"
-        backgroundColor="green.600"
-        variant="solid"
-        className="pre-order"
-      />
-    </Toolbar>
-  )
+  // Recent chats data
+  const recentChats = [
+    {
+      title: 'August 7, 2024 - Untitled',
+      assistant: 'No assistant',
+      createdBy: 'Jason Fleming',
+      lastUpdated: 'A few seconds ago',
+    },
+    {
+      title: 'Customer Inquiry:Encryption Methods',
+      assistant: 'Sales Support Assistant',
+      createdBy: 'Jason Fleming',
+      lastUpdated: '7 hours ago',
+    },
+    {
+      title: 'Data Security Inquiry with SprinterSoftwareGroup',
+      assistant: 'Sales Support Assistant',
+      createdBy: 'Jason Fleming',
+      lastUpdated: '7 hours ago',
+    },
+  ]
 
-  const footer = (
-    <Toolbar justifyContent="flex-start" variant="secondary" size="xs">
-      <SegmentedControl
-        size="xs"
-        segments={[
-          {
-            id: '1d',
-            label: '1d',
-          },
-          {
-            id: '3d',
-            label: '3d',
-          },
-          {
-            id: '7d',
-            label: '7d',
-          },
-          { id: '30d', label: '30d' },
-          { id: 'custom', label: 'Custom' },
-        ]}
-        value={range}
-        onChange={onPresetChange}
-      />
-      <DateRangePicker value={dateRange} onChange={onRangeChange} />
-    </Toolbar>
-  )
-
-  const body = isLoading ? (
-    <LoadingOverlay>
-      <LoadingSpinner />
-    </LoadingOverlay>
-  ) : (
-    <Box 
-      height="calc(100vh - 128px)"
-      overflow="auto"
-      sx={{
-        '&::-webkit-scrollbar': {
-          display: 'none'
-        },
-        msOverflowStyle: 'none',
-        scrollbarWidth: 'none'
-      }}
-    >
-      {/* Receivables Section */}
-      <Box mb={8}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+  const header = (
+    <Flex justify="space-between" align="center" width="100%" mb={8}>
           <Box>
-            <Heading size="lg" mb={2}>Receivables</Heading>
-            <Text color="gray.600">
-              Effortlessly view and manage your accounts in one place with real-time balance updates.
-            </Text>
+        <Heading size="md">Welcome, Jason</Heading>
+        <Text color="gray.600">Start a new chat, or pick up where you left off</Text>
           </Box>
           <Button
-            as="a"
-            href="#"
-            colorScheme="green"
-            variant="link"
-            rightIcon={<Icon as={LuChevronRight} />}
-          >
-            View Reports
+        leftIcon={<Icon as={LuPlus} />}
+        color="white"
+        bg="#2348B7"
+        onClick={() => {}}
+      >
+        New Chat
           </Button>
-        </Box>
+    </Flex>
+  )
 
-        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
-          <Card borderTop="4px solid" borderTopColor="green.400">
+  const content = (
+    <Stack spacing={8} pb={8}>
+      {/* Assistant Cards */}
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={6}>
+        {assistants.map((assistant, index) => (
+          <Card key={index} variant="outline" height="100%">
             <CardBody>
-              <Text fontSize="md" fontWeight="medium" mb={3}>Logistic System Account</Text>
-              <HStack mb={2} justify="space-between">
-                <Text color="gray.600" fontSize="sm">Project cost: 13000$</Text>
-                <Text color="gray.600" fontSize="sm">Total spending: 6000$</Text>
-              </HStack>
-              <HStack justify="space-between" mb={2}>
-                <Text color="gray.600" fontSize="sm">Budget</Text>
-                <Text color="gray.600" fontSize="sm">20%</Text>
-              </HStack>
-              <Progress value={20} size="sm" colorScheme="green" />
-            </CardBody>
-          </Card>
-
-          <Card borderTop="4px solid" borderTopColor="green.400">
-            <CardBody>
-              <Text fontSize="md" fontWeight="medium" mb={3}>Payble Accounts</Text>
-              <HStack mb={2} justify="space-between">
-                <Text color="gray.600" fontSize="sm">Project cost: 13000$</Text>
-                <Text color="gray.600" fontSize="sm">Total spending: 6000$</Text>
-              </HStack>
-              <HStack justify="space-between" mb={2}>
-                <Text color="gray.600" fontSize="sm">Budget</Text>
-                <Text color="gray.600" fontSize="sm">20%</Text>
-              </HStack>
-              <Progress value={20} size="sm" colorScheme="green" />
-            </CardBody>
-          </Card>
-
-          <Card borderTop="4px solid" borderTopColor="green.400">
-            <CardBody>
-              <Text fontSize="md" fontWeight="medium" mb={3}>System Account</Text>
-              <HStack mb={2} justify="space-between">
-                <Text color="gray.600" fontSize="sm">Project cost: 13000$</Text>
-                <Text color="gray.600" fontSize="sm">Total spending: 6000$</Text>
-              </HStack>
-              <HStack justify="space-between" mb={2}>
-                <Text color="gray.600" fontSize="sm">Completed</Text>
-                <Text color="gray.600" fontSize="sm">100%</Text>
-              </HStack>
-              <Progress value={100} size="sm" colorScheme="green" />
-            </CardBody>
-          </Card>
-        </SimpleGrid>
-      </Box>
-
-      {/* Charts Section */}
-      <Box mb={8}>
-        <Heading size="lg" mb={2}>Cashflow Analysis</Heading>
-        <Text color="gray.600" mb={4}>
-          Effortlessly view and manage your accounts in one place with real-time balance updates.
-        </Text>
-
-        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
-          <Card>
-            <CardBody height="300px">
-              <BarChart
-                data={[
-                  { month: 'Jan', income: 300, outcome: 200 },
-                  { month: 'Feb', income: 200, outcome: 150 },
-                  { month: 'Mar', income: 400, outcome: 300 },
-                  { month: 'Apr', income: 300, outcome: 250 },
-                  { month: 'May', income: 500, outcome: 400 }
-                ]}
-                categories={['income', 'outcome']}
-                index="month"
-                height="250px"
-                colors={['#38B2AC', '#2C7A7B']}
-              />
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody height="300px">
-              <Heading size="md" mb={4}>Monthly Analysis</Heading>
-              <Box position="relative" height="250px">
-                <AreaChart
-                  data={[
-                    { day: 1, lastMonth: 3004, thisMonth: 4504 },
-                    { day: 2, lastMonth: 3200, thisMonth: 4200 },
-                    { day: 3, lastMonth: 2800, thisMonth: 4400 },
-                    { day: 4, lastMonth: 2600, thisMonth: 4100 },
-                    { day: 5, lastMonth: 2700, thisMonth: 4300 },
-                    { day: 6, lastMonth: 2800, thisMonth: 4000 },
-                    { day: 7, lastMonth: 2900, thisMonth: 4200 },
-                    { day: 8, lastMonth: 3000, thisMonth: 4504 }
-                  ]}
-                  categories={['lastMonth', 'thisMonth']}
-                  index="day"
-                  height="200px"
-                  colors={['#3182CE', '#38B2AC']} // Blue for last month, Teal for this month
-                  yAxisWidth={65}
-                  valueFormatter={(value) => `$${value}`}
+              <Stack spacing={4}>
+                {!assistant.isCreateNew ? (
+                  <>
+                    <HStack spacing={3} align="center">
+                      <Box
+                        position="relative"
+                        width="32px"
+                        height="32px"
+                      >
+                        <Icon 
+                          as={LuUser} 
+                          position="absolute"
+                          top="50%"
+                          left="50%"
+                          transform="translate(-50%, -50%)"
+                          boxSize={5}
+                          color="black"
+                        />
+                        <Box
+                          position="absolute"
+                          top={0}
+                          left={0}
+                          right={0}
+                          bottom={0}
+                          borderRadius="full"
+                          border="1px solid"
+                          borderColor="blackAlpha.900"
                 />
               </Box>
-              <HStack justify="center" spacing={8} mt={4}>
-                <HStack>
-                  <Box w="3" h="3" borderRadius="full" bg="blue.500" />
-                  <Text color="gray.600">Last Month</Text>
-                  <Text fontWeight="medium">$3,004</Text>
+                      <Text fontWeight="medium">{assistant.name}</Text>
                 </HStack>
-                <HStack>
-                  <Box w="3" h="3" borderRadius="full" bg="teal.500" />
-                  <Text color="gray.600">This Month</Text>
-                  <Text fontWeight="medium">$4,504</Text>
-                </HStack>
-              </HStack>
-            </CardBody>
-          </Card>
-        </SimpleGrid>
-      </Box>
-
-      {/* Transactions Section */}
-      <Box mb={6}>
-        <Heading size="lg" mb={2}>Transactions</Heading>
-        <Text color="gray.600" mb={4}>
-          Effortlessly view and manage your accounts in one place with real-time balance updates.
-        </Text>
-
-        <SimpleGrid columns={1} spacing={4}>
-          {transactions.map((transaction, index) => (
-            <Card 
-              key={index}
-              borderLeftWidth="4px"
-              borderLeftColor="green.400"
-            >
-              <CardBody py={4} px={6}>
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <Box>
-                    <Text fontSize="md" fontWeight="medium">
-                      {transaction.name}
+                    <Text fontSize="sm" color="gray.600" noOfLines={3}>
+                      {assistant.description}
                     </Text>
-                    <Text fontSize="sm" color="gray.500">
-                      {transaction.date}
-                    </Text>
-                    <Text fontSize="sm" color="gray.500">
-                      {transaction.transactionId}
-                    </Text>
+                    <Box>
+                      <Button 
+                        size="sm" 
+                        variant="link"
+                        color="#2348B7"
+                        rightIcon={<Icon as={LuArrowRight} />}
+                        p={0}
+                        height="auto"
+                        _hover={{
+                          textDecoration: 'none',
+                          color: 'blue.600'
+                        }}
+                      >
+                        Start a chat
+                      </Button>
                   </Box>
-                  <Text 
-                    fontSize="lg" 
-                    fontWeight="medium"
-                    color={transaction.isPositive ? "green.500" : undefined}
+                  </>
+                ) : (
+                  <Flex 
+                    direction="column" 
+                    align="center" 
+                    justify="center" 
+                    height="100%"
+                    minH="140px"
                   >
-                    {transaction.amount}
-                  </Text>
-                </Box>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      leftIcon={<Icon as={LuPlus} />}
+                    >
+                      Create New Assistant
+                    </Button>
+                  </Flex>
+                )}
+              </Stack>
               </CardBody>
             </Card>
           ))}
         </SimpleGrid>
+
+      {/* Recent Chats Section */}
+      <Box>
+        <Flex justify="space-between" align="center" mb={4}>
+          <Heading size="md">Recent Chats</Heading>
+          <Select width="200px" size="sm" defaultValue="all">
+            <option value="all">All</option>
+            <option value="no-assistant">No assistant</option>
+            <option value="sales-support">Sales Support Assistant</option>
+          </Select>
+        </Flex>
+        <Card>
+          <Table>
+            <Thead>
+              <Tr>
+                <Th>NAME</Th>
+                <Th>ASSISTANT</Th>
+                <Th>CREATED BY</Th>
+                <Th>LAST UPDATED</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {recentChats.map((chat, index) => (
+                <Tr key={index} cursor="pointer" _hover={{ bg: 'gray.50' }}>
+                  <Td>{chat.title}</Td>
+                  <Td>{chat.assistant}</Td>
+                  <Td>{chat.createdBy}</Td>
+                  <Td>{chat.lastUpdated}</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </Card>
       </Box>
-    </Box>
+    </Stack>
   )
 
   return (
-    <Page isLoading={isLoading}>
-      <PageHeader title="Dashboard" toolbar={toolbar} footer={footer} />
+    <Page height="100vh">
       <PageBody
         contentWidth="container.2xl"
         bg="page-body-bg-subtle"
         py={{ base: 4, xl: 8 }}
         px={{ base: 4, xl: 8 }}
+        height="calc(100vh - 0px)"
+        overflow="auto"
+        sx={{
+          '&::-webkit-scrollbar': {
+            display: 'none'
+          },
+          msOverflowStyle: 'none',
+          scrollbarWidth: 'none',
+        }}
       >
-        {body}
+        {header}
+        {content}
       </PageBody>
     </Page>
   )

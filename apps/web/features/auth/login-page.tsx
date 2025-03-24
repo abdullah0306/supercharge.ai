@@ -109,8 +109,8 @@ export const LoginPage = () => {
             onSubmit={onSubmit}
             sx={{
               'input:focus-visible, select:focus-visible': {
-                borderColor: '#1AB294 !important',
-                boxShadow: '0 0 0 1px #1AB294 !important',
+                borderColor: '#2348B7 !important',
+                boxShadow: '0 0 0 1px #2348B7 !important',
               }
             }}
           >
@@ -139,8 +139,8 @@ export const LoginPage = () => {
                 <Link href="/forgot-password">Forgot your password?</Link>
 
                 <SubmitButton 
-                  backgroundColor="#1AB294"
-                  _hover={{ backgroundColor: 'green.800' }}
+                  backgroundColor="#2348B7"
+                  _hover={{ backgroundColor: '#1647da' }}
                   color="white"
                 >
                   Login
@@ -162,7 +162,7 @@ export const LoginPage = () => {
 
         <Text color="muted">
           Don&apos;t have an account yet?{' '}
-          <Link href="/signup" color="green.500">
+          <Link href="/signup" color="#2348B7">
             Sign up
           </Link>
           .

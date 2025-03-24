@@ -43,6 +43,7 @@
     "axios": "^1.8.2",
     "cookies-next": "^5.1.0",
     "date-fns": "^4.1.0",
+    "dotenv": "^16.4.7",
     "framer-motion": "^11.18.1",
     "next": "^15.1.5",
     "next-svgr": "^0.0.2",
