@@ -32,7 +32,7 @@ interface DashboardPageProps {
   }
 }
 
-export const DashboardPage: React.FC<DashboardPageProps> = (_params) => {
+export const DashboardPage: React.FC<DashboardPageProps> = ({}) => {
   // Assistant cards data
   const assistants = [
     {
