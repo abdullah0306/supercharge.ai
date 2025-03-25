@@ -16626,9 +16626,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"SuperCharge-ai@workspace:.":
+"muhasaba-ai@workspace:.":
   version: 0.0.0-use.local
-  resolution: "SuperCharge-ai@workspace:."
+  resolution: "muhasaba-ai@workspace:."
   dependencies:
     "@chakra-ui/cli": "npm:^2.5.6"
     "@changesets/cli": "npm:^2.27.11"
