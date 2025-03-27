@@ -16,7 +16,7 @@ import {
   useToast,
   Spinner,
 } from '@chakra-ui/react'
-import { FiMessageSquare, FiBox, FiMoreVertical, FiSearch} from 'react-icons/fi'
+import { FiMessageSquare, FiBox, FiMoreVertical, FiSearch, FiMenu, FiX } from 'react-icons/fi'
 import { api } from '#lib/trpc/react'
 import { v4 as uuidv4 } from 'uuid'
 import { useParams } from 'next/navigation'
@@ -503,10 +503,26 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
     )
   }
 
+  // Add state for controlling sidebar visibility
+  const [isSidebarVisible, setIsSidebarVisible] = React.useState(true);
+
+  // Effect to handle sidebar visibility based on chat selection
+  React.useEffect(() => {
+    if (selectedChat) {
+      setIsSidebarVisible(false);
+    }
+  }, [selectedChat]);
+
   return (
     <Flex h="100vh" bg={bgColor} overflow="hidden">
       {/* Left sidebar with chat list */}
-      <Box w="350px" bg={chatListBg} borderRight="1px" borderColor={borderColor}>
+      <Box 
+        w="350px" 
+        bg={chatListBg} 
+        borderRight="1px" 
+        borderColor={borderColor}
+        display={{ base: isSidebarVisible ? "block" : "none", md: "block" }}
+      >
         {/* Header */}
         <Flex 
           p={4} 
@@ -591,12 +607,23 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
                   {selectedChat !== 'ai' && 'Online'}
                 </Text>
               </Box>
-              <IconButton
-                ml="auto"
-                aria-label="More options"
-                icon={<FiMoreVertical />}
-                variant="ghost"
-              />
+              <HStack ml="auto" spacing={2}>
+                <IconButton
+                  display={{ base: "flex", md: "none" }}
+                  aria-label="Close chat"
+                  icon={<FiX />}
+                  variant="ghost"
+                  onClick={() => {
+                    setSelectedChat(null);
+                    setIsSidebarVisible(true);
+                  }}
+                />
+                <IconButton
+                  aria-label="More options"
+                  icon={<FiMoreVertical />}
+                  variant="ghost"
+                />
+              </HStack>
             </Flex>
 
             {/* Chat messages area */}

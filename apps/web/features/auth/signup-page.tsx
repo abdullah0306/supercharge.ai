@@ -132,7 +132,19 @@ export const SignupPage = () => {
           .
         </Text>
       </Stack>
-      <Stack flex="1" bg="#2348B7">
+      <Stack
+        flex="1"
+        bg="#2348B7"
+        display={{ base: "flex", sm: "none", md: "flex" }}
+        sx={{
+          "@media (min-width: 321px) and (max-width: 480px)": {
+            display: "none",
+          },
+          "@media (min-width: 481px) and (max-width: 600px)": {
+            display: "none",
+          },
+        }}
+      >
         <Center flex="1">
           <Testimonial />
         </Center>
