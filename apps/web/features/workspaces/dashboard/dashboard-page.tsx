@@ -104,19 +104,34 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ params: { workspac
   ]
 
   const header = (
-    <Flex justify="space-between" align="center" width="100%" mb={8}>
-          <Box>
-        <Heading size="md">Welcome, Jason</Heading>
-        <Text color="gray.600">Start a new chat, or pick up where you left off</Text>
-          </Box>
-          <Button
-        leftIcon={<Icon as={LuPlus} />}
-        color="white"
-        bg="#2348B7"
-        onClick={() => {}}
-      >
-        New Chat
-          </Button>
+    <Flex 
+      justify="space-between" 
+      align="center"
+      width="100%" 
+      mb={8}
+      gap={4}
+      pl={{ base: "30px", md: "44px" }}
+    >
+      <Box maxW={{ base: "60%", sm: "100%" }} overflow="hidden">
+        <Heading size={{ base: "sm", md: "md" }} mb={1} isTruncated pl={2}>Welcome, Jason</Heading>
+        <Text color="gray.600" fontSize={{ base: "sm", md: "md" }} noOfLines={2} pl={2}>
+          Start a new chat, or pick up where you left off
+        </Text>
+      </Box>
+      <Box flexShrink={0}>
+        <Button
+          leftIcon={<Icon as={LuPlus} boxSize={{ base: 4, md: 5 }} />}
+          color="white"
+          bg="#2348B7"
+          onClick={() => {}}
+          size={{ base: "sm", md: "md" }}
+          whiteSpace="nowrap"
+          minW="auto"
+        >
+          <Text display={{ base: "none", sm: "block" }}>New Chat</Text>
+          <Text display={{ base: "block", sm: "none" }}>New</Text>
+        </Button>
+      </Box>
     </Flex>
   )
 
@@ -211,28 +226,63 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ params: { workspac
             <option value="sales-support">Sales Support Assistant</option>
           </Select>
         </Flex>
-        <Card>
-          <Table>
-            <Thead>
-              <Tr>
-                <Th>NAME</Th>
-                <Th>ASSISTANT</Th>
-                <Th>CREATED BY</Th>
-                <Th>LAST UPDATED</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {recentChats.map((chat, index) => (
-                <Tr key={index} cursor="pointer" _hover={{ bg: 'gray.50' }}>
-                  <Td>{chat.title}</Td>
-                  <Td>{chat.assistant}</Td>
-                  <Td>{chat.createdBy}</Td>
-                  <Td>{chat.lastUpdated}</Td>
+        
+        {/* Table view for larger screens */}
+        <Box display={{ base: 'none', lg: 'block' }}>
+          <Card>
+            <Table>
+              <Thead>
+                <Tr>
+                  <Th>NAME</Th>
+                  <Th>ASSISTANT</Th>
+                  <Th>CREATED BY</Th>
+                  <Th>LAST UPDATED</Th>
                 </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </Card>
+              </Thead>
+              <Tbody>
+                {recentChats.map((chat, index) => (
+                  <Tr key={index} cursor="pointer" _hover={{ bg: 'gray.50' }}>
+                    <Td>{chat.title}</Td>
+                    <Td>{chat.assistant}</Td>
+                    <Td>{chat.createdBy}</Td>
+                    <Td>{chat.lastUpdated}</Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </Card>
+        </Box>
+
+        {/* Card view for screens between 321px and 992px */}
+        <Box display={{ base: 'block', lg: 'none' }}>
+          <Stack spacing={4}>
+            {recentChats.map((chat, index) => (
+              <Card key={index} variant="outline" cursor="pointer" _hover={{ bg: 'gray.50' }}>
+                <CardBody>
+                  <Stack spacing={3}>
+                    <Text fontWeight="semibold" noOfLines={2}>
+                      {chat.title}
+                    </Text>
+                    <Stack spacing={2}>
+                      <Flex justify="space-between" align="center">
+                        <Text fontSize="sm" color="gray.600">Assistant</Text>
+                        <Text fontSize="sm">{chat.assistant}</Text>
+                      </Flex>
+                      <Flex justify="space-between" align="center">
+                        <Text fontSize="sm" color="gray.600">Created by</Text>
+                        <Text fontSize="sm">{chat.createdBy}</Text>
+                      </Flex>
+                      <Flex justify="space-between" align="center">
+                        <Text fontSize="sm" color="gray.600">Last updated</Text>
+                        <Text fontSize="sm">{chat.lastUpdated}</Text>
+                      </Flex>
+                    </Stack>
+                  </Stack>
+                </CardBody>
+              </Card>
+            ))}
+          </Stack>
+        </Box>
       </Box>
     </Stack>
   )

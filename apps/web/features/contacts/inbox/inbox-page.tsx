@@ -508,8 +508,15 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
       {/* Left sidebar with chat list */}
       <Box w="350px" bg={chatListBg} borderRight="1px" borderColor={borderColor}>
         {/* Header */}
-        <Flex p={4} justify="space-between" align="center" borderBottom="1px" borderColor={borderColor}>
-          <Text fontSize="xl" fontWeight="bold">
+        <Flex 
+          p={4} 
+          justify="space-between" 
+          align="center" 
+          borderBottom="1px" 
+          borderColor={borderColor}
+          pl={{ base: "40px", md: "44px" }}
+        >
+          <Text fontSize="xl" fontWeight="bold" pl={2}>
             Chats
           </Text>
           <HStack spacing={2}>

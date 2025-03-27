@@ -86,20 +86,28 @@ export default function AssistantsPage() {
   ]
 
   const header = (
-    <Stack spacing={6} mb={8}>
+    <Stack spacing={6} mb={8} pl={{ base: "20px", md: "44px" }}>
       <Flex justify="space-between" align="center" width="100%">
-        <Box>
-          <Heading size="md">Assistants</Heading>
-          <Text color="gray.600">Create and manage your AI-powered business assistants.</Text>
+        <Box maxW={{ base: "60%", sm: "100%" }} overflow="hidden">
+          <Heading size={{ base: "sm", md: "md" }} mb={1} isTruncated pl={2}>Assistants</Heading>
+          <Text color="gray.600" fontSize={{ base: "sm", md: "md" }} noOfLines={2} pl={2}>
+            Create and manage your AI-powered business assistants.
+          </Text>
         </Box>
-        <Button
-          leftIcon={<Icon as={LuPlus} />}
-          color="white"
-          bg="#2348B7"
-          onClick={() => {}}
-        >
-          Create New Assistant
-        </Button>
+        <Box flexShrink={0}>
+          <Button
+            leftIcon={<Icon as={LuPlus} boxSize={{ base: 4, md: 5 }} />}
+            color="white"
+            bg="#2348B7"
+            onClick={() => {}}
+            size={{ base: "sm", md: "md" }}
+            whiteSpace="nowrap"
+            minW="auto"
+          >
+            <Text display={{ base: "none", sm: "block" }}>Create New Assistant</Text>
+            <Text display={{ base: "block", sm: "none" }}>Create</Text>
+          </Button>
+        </Box>
       </Flex>
       <Flex>
         <InputGroup maxW="300px">
