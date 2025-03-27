@@ -16,7 +16,7 @@ import {
   useToast,
   Spinner,
 } from '@chakra-ui/react'
-import { FiMessageSquare, FiBox, FiMoreVertical, FiSearch, FiMenu, FiX } from 'react-icons/fi'
+import { FiMessageSquare, FiBox, FiMoreVertical, FiSearch, FiX } from 'react-icons/fi'
 import { api } from '#lib/trpc/react'
 import { v4 as uuidv4 } from 'uuid'
 import { useParams } from 'next/navigation'
@@ -154,6 +154,14 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
   const routeParams = useParams()
   const workspaceId = params.workspace ?? routeParams?.workspace as string
 
+  // Initialize state hooks
+  const [selectedChat, setSelectedChat] = React.useState<string | null>(null)
+  const [messageInput, setMessageInput] = React.useState('')
+  const [conversationId] = React.useState<string>(uuidv4())
+  const [isAILoading, setIsAILoading] = React.useState(false)
+  const [isWelcomeLoading, setIsWelcomeLoading] = React.useState(true)
+  const [isSidebarVisible, setIsSidebarVisible] = React.useState(true)
+
   // Add validation for workspaceId
   React.useEffect(() => {
     if (!workspaceId) {
@@ -161,12 +169,13 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
     }
   }, [workspaceId])
 
-  // Initialize state hooks
-  const [selectedChat, setSelectedChat] = React.useState<string | null>(null)
-  const [messageInput, setMessageInput] = React.useState('')
-  const [conversationId] = React.useState<string>(uuidv4())
-  const [isAILoading, setIsAILoading] = React.useState(false)
-  const [isWelcomeLoading, setIsWelcomeLoading] = React.useState(true)
+  // Effect to handle sidebar visibility based on chat selection
+  React.useEffect(() => {
+    if (selectedChat) {
+      setIsSidebarVisible(false);
+    }
+  }, [selectedChat]);
+
   // Fetch user session first
   const { data: sessionData } = api.auth.me.useQuery(undefined, {
     retry: 1,
@@ -502,16 +511,6 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
       </Flex>
     )
   }
-
-  // Add state for controlling sidebar visibility
-  const [isSidebarVisible, setIsSidebarVisible] = React.useState(true);
-
-  // Effect to handle sidebar visibility based on chat selection
-  React.useEffect(() => {
-    if (selectedChat) {
-      setIsSidebarVisible(false);
-    }
-  }, [selectedChat]);
 
   return (
     <Flex h="100vh" bg={bgColor} overflow="hidden">
