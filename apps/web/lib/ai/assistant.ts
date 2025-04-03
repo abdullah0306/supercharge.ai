@@ -26,11 +26,11 @@ if (!openai.apiKey) {
   throw new Error('OpenAI API key is required');
 }
 
-export interface ChatMessage {
+export type ChatMessage = {
   conversation_id: string;
   role: 'user' | 'assistant';
   content: string;
-}
+};
 
 export const generateAIResponse = async (messages: ChatMessage[]): Promise<string> => {
   try {
@@ -60,14 +60,12 @@ export const generateAIResponse = async (messages: ChatMessage[]): Promise<strin
 export const saveChatMessage = async (
   message: string,
   userId: string,
-  role: 'user' | 'assistant',
   workspaceId: string,
   conversationId?: string
 ) => {
   return await db.insert(chatHistory).values({
     userId,
-    role,
-    message,
+    ai_assistant: message,
     workspaceId,
     conversationId: conversationId || uuidv4(),
     timestamp: new Date()

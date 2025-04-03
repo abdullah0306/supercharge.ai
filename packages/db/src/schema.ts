@@ -34,7 +34,7 @@ export const chatHistory = pgTable('chat_history', {
   id: serial('id').primaryKey(),
   user_id: uuid('user_id').references(() => users.id).notNull(),
   role: varchar('role', { enum: ['user', 'assistant'] }).notNull(),
-  message: text('message').notNull(),
+  ai_assistant: text('ai_assistant').notNull(),
   timestamp: timestamp('timestamp', { withTimezone: true }).defaultNow(),
   workspace_id: varchar('workspace_id'),
   conversation_id: uuid('conversation_id').defaultRandom()
