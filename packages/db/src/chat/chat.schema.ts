@@ -35,7 +35,7 @@ export const chatHistory = pgTable('chat_history', {
   
   // Message details
   role: chatRoleEnum('role').notNull(),
-  message: text('message').notNull(),
+  ai_assistant: text('ai_assistant').notNull(),
   
   // Timestamps
   createdAt: timestamp('created_at', { withTimezone: true })

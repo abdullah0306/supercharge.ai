@@ -42,8 +42,7 @@ export const chatRouter = createTRPCRouter({
             userId: ctx.session.user.id,
             workspaceId: input.workspaceId,
             conversationId,
-            role: 'assistant',
-            message: DEFAULT_WELCOME_MESSAGE,
+            ai_assistant: DEFAULT_WELCOME_MESSAGE,
             timestamp: new Date(),
           });
         }
@@ -85,8 +84,7 @@ export const chatRouter = createTRPCRouter({
           userId: ctx.session.user.id,
           workspaceId: input.workspaceId,
           conversationId: input.conversationId,
-          role: 'user',
-          message: input.message,
+          ai_assistant: input.message,
           timestamp: new Date(),
         });
 
@@ -103,10 +101,10 @@ export const chatRouter = createTRPCRouter({
           .orderBy(chatHistory.timestamp);
 
         // Transform messages to ChatMessage format
-        const chatMessages: ChatMessage[] = previousMessages.map(msg => ({
+        const chatMessages: ChatMessage[] = previousMessages.map((msg, index) => ({
           conversation_id: msg.conversationId,
-          role: msg.role,
-          content: msg.message
+          role: index % 2 === 0 ? 'assistant' : 'user', // First message is welcome (assistant), then alternating
+          content: msg.ai_assistant
         }));
 
         // Generate AI response
@@ -117,8 +115,7 @@ export const chatRouter = createTRPCRouter({
           userId: ctx.session.user.id,
           workspaceId: input.workspaceId,
           conversationId: input.conversationId,
-          role: 'assistant',
-          message: aiResponse,
+          ai_assistant: aiResponse,
           timestamp: new Date(),
         });
 

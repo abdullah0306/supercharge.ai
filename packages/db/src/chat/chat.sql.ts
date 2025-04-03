@@ -5,15 +5,11 @@ import {
   varchar, 
   text, 
   timestamp, 
-  uuid,
-  pgEnum
+  uuid
 } from 'drizzle-orm/pg-core';
 import { users } from '../users/users.sql'; 
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { userId } from '../utils';
-
-// Create an enum for the role
-export const roleEnum = pgEnum('role', ['user', 'assistant']);
 
 export const chatHistory = pgTable('chat_history', {
   id: serial('id').primaryKey(),
@@ -21,8 +17,7 @@ export const chatHistory = pgTable('chat_history', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   conversationId: uuid('conversation_id').notNull().defaultRandom(),
-  role: roleEnum('role').notNull(),
-  message: text('message').notNull(),
+  ai_assistant: text('ai_assistant').notNull(),
   workspaceId: varchar('workspace_id', { length: 255 }),
   timestamp: timestamp('timestamp', { withTimezone: true }).defaultNow(),
 });

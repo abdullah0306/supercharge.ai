@@ -364,7 +364,7 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
       messages: Message[];
     }[] = [];
 
-    sortedMessages.forEach((msg) => {
+    sortedMessages.forEach((msg, index) => {
       if (!msg.timestamp) return;
       
       const msgDate = new Date(msg.timestamp);
@@ -382,15 +382,15 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
       }
 
       // Check if it's a welcome message
-      const isWelcomeMessage = msg.message === "Hello! How can I help you today?" || 
-        msg.message.toLowerCase().includes('welcome');
+      const isWelcomeMessage = msg.ai_assistant === "Hello! How can I help you today?" || 
+        msg.ai_assistant.toLowerCase().includes('welcome');
 
       // Add message to group
       dateGroup.messages.push({
-        content: msg.message,
+        content: msg.ai_assistant,
         timestamp: formattedTime,
         timeGroup,
-        isOutgoing: msg.role === 'user',
+        isOutgoing: index % 2 !== 0, // Even indices (0, 2, etc.) are assistant messages, odd are user messages
         originalDate: msgDate,
         isWelcomeMessage
       });
