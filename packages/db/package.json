@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
-    "db:push": "drizzle-kit push:pg --force",
+    "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:check": "drizzle-kit check",
@@ -33,6 +33,7 @@
     "dotenv-cli": "^8.0.0",
     "drizzle-kit": "^0.30.2",
     "pg": "^8.13.1",
+    "tsx": "^4.19.3",
     "typescript": "^5.7.3"
   }
 }

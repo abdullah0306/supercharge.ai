@@ -1,0 +1,1 @@
+ALTER TABLE "chat_history" ADD COLUMN "bug_reporting" jsonb DEFAULT '[]' NOT NULL;

@@ -1,0 +1,1 @@
+ALTER TABLE "chat_history" ADD COLUMN "rfp_response" jsonb DEFAULT '[]' NOT NULL;

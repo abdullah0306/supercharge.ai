@@ -20,6 +20,7 @@ import { FiMessageSquare, FiBox, FiMoreVertical, FiSearch, FiX } from 'react-ico
 import { api } from '#lib/trpc/react'
 import { v4 as uuidv4 } from 'uuid'
 import { useParams } from 'next/navigation'
+import { WELCOME_MESSAGES } from '#lib/ai/config'
 
 // Chat message component
 interface ChatMessageProps {
@@ -149,151 +150,30 @@ interface InboxListPageProps {
   data?: any
 }
 
-export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
-  // Use hooks at the top level
+// Add these types at the top of the file
+interface ChatMessage {
+  assistant: string | null;
+  user: string | null;
+}
+
+interface Message {
+  content: string;
+  timestamp: string;
+  timeGroup?: string;
+  isOutgoing: boolean;
+  originalDate?: Date;
+  isTimeSeparator?: boolean;
+}
+
+interface MessageGroup {
+  date: string;
+  messages: Message[];
+}
+
+export const InboxListPage: React.FC<InboxListPageProps> = ({ params, searchParams }) => {
   const routeParams = useParams()
   const workspaceId = params.workspace ?? routeParams?.workspace as string
-
-  // Initialize state hooks
-  const [selectedChat, setSelectedChat] = React.useState<string | null>(null)
-  const [messageInput, setMessageInput] = React.useState('')
-  const [conversationId] = React.useState<string>(uuidv4())
-  const [isAILoading, setIsAILoading] = React.useState(false)
-  const [isWelcomeLoading, setIsWelcomeLoading] = React.useState(true)
-  const [isSidebarVisible, setIsSidebarVisible] = React.useState(true)
-
-  // Add validation for workspaceId
-  React.useEffect(() => {
-    if (!workspaceId) {
-      console.error('No workspace ID found')
-    }
-  }, [workspaceId])
-
-  // Effect to handle sidebar visibility based on chat selection
-  React.useEffect(() => {
-    if (selectedChat) {
-      setIsSidebarVisible(false);
-    }
-  }, [selectedChat]);
-
-  // Fetch user session first
-  const { data: sessionData } = api.auth.me.useQuery(undefined, {
-    retry: 1,
-    placeholderData: null
-  });
-
-  // Wrap session initialization in useMemo
-  const session = React.useMemo(() => 
-    sessionData ? { user: sessionData } : null
-  , [sessionData]);
-
-  // Log user information for debugging
-  React.useEffect(() => {
-    console.log('Session:', session)
-  }, [session])
-
-  // Ref hook
-  const chatContainerRef = React.useRef<HTMLDivElement>(null)
-
-  // TRPC hooks with better error handling
-  const { data: chatHistory, refetch: refetchChat, isLoading: isChatLoading } = api.chat.getConversation.useQuery(
-    { 
-      workspaceId: workspaceId ?? '',
-      conversationId: conversationId,
-    }, 
-    { 
-      enabled: selectedChat === 'ai' && !!workspaceId,
-    }
-  );
-
-  const sendMessageMutation = api.chat.sendMessage.useMutation({
-    onSuccess: async () => {
-      setMessageInput('');
-      await refetchChat();
-    },
-    onError: (error) => {
-      console.error('Failed to send message:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to send message. Please try again.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  });
-
-  // Handle sending messages
-  const handleSendMessage = async () => {
-    if (!messageInput.trim() || selectedChat !== 'ai' || !workspaceId) return;
-
-    if (!session) {
-      toast({
-        title: 'Authentication Required',
-        description: 'Please log in to send messages.',
-        status: 'warning',
-        duration: 5000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    setIsAILoading(true);
-    
-    try {
-      const response = await sendMessageMutation.mutateAsync({
-        workspaceId,
-        conversationId,
-        message: messageInput.trim(),
-      });
-      
-      if (response?.success) {
-        setMessageInput('');
-      }
-    } catch (error) {
-      console.error('Error sending message:', error);
-      toast({
-        title: 'Error Sending Message',
-        description: 'Failed to send message. Please try again.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    } finally {
-      setIsAILoading(false);
-    }
-  };
-
-  // Handle initial welcome message and loading state
-  React.useEffect(() => {
-    if (chatHistory && chatHistory.length === 0 && workspaceId) {
-      const mutation = api.chat.sendMessage.useMutation({
-        onSuccess: async (response: any) => {
-          await refetchChat();
-          console.log('Welcome message sent successfully:', response);
-        },
-        onError: (error: any) => {
-          console.error('Failed to send welcome message:', error);
-        }
-      });
-
-      mutation.mutate({
-        workspaceId,
-        conversationId,
-        message: "Hello! How can I help you today?",
-      });
-    }
-    setIsWelcomeLoading(false);
-  }, [chatHistory, workspaceId, conversationId, refetchChat]);
-
-  const toast = useToast();
-
-  // Initialize chat when selecting AI Assistant
-  React.useEffect(() => {
-    if (selectedChat === 'ai' && workspaceId) {
-      refetchChat();
-    }
-  }, [selectedChat, workspaceId, refetchChat]);
+  const toast = useToast()
 
   // Utility function to format dates like WhatsApp
   const formatChatDate = (date: Date) => {
@@ -323,110 +203,249 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
     });
   };
 
-  // Message type definitions
-  interface MessageGroup {
-    date: string;
-    messages: Message[];
-  }
+  // Get assistant and conversationId from query params
+  const initialAssistant = searchParams?.assistant === 'sales' 
+    ? 'sales' 
+    : searchParams?.assistant === 'hr'
+      ? 'hr'
+      : searchParams?.assistant === 'marketing'
+        ? 'marketing'
+        : searchParams?.assistant === 'data'
+          ? 'data'
+          : searchParams?.assistant === 'bug'
+            ? 'bug'
+            : searchParams?.assistant === 'rfp'
+              ? 'rfp'
+              : 'ai';
+  const initialConversationId = searchParams?.conversationId as string || uuidv4()
 
-  type Message = {
-    content: string;
-    timestamp: string;
-    timeGroup: string;
-    isOutgoing: boolean;
-    originalDate: Date;
-    isWelcomeMessage?: boolean;
-    isTimeSeparator?: boolean;
-  };
+  const [selectedChat, setSelectedChat] = React.useState<string>(initialAssistant)
+  const [messageInput, setMessageInput] = React.useState('')
+  const [conversationId] = React.useState<string>(initialConversationId)
+  const [isAILoading, setIsAILoading] = React.useState(false)
+  const [isWelcomeLoading, setIsWelcomeLoading] = React.useState(true)
+  const [isSidebarVisible, setIsSidebarVisible] = React.useState(!searchParams?.assistant)
 
-  // Move useColorModeValue hooks to the top level
-  const bgColor = useColorModeValue('gray.50', 'gray.900');
+  // Get current assistant type based on selected chat
+  const currentAssistantType = React.useMemo(() => {
+    switch (selectedChat) {
+      case 'sales':
+        return 'sales_assistant';
+      case 'hr':
+        return 'hr_assistant';
+      case 'marketing':
+        return 'marketing_assistant';
+      case 'data':
+        return 'data_analyst';
+      case 'bug':
+        return 'bug_reporting';
+      case 'rfp':
+        return 'rfp_response';
+      default:
+        return 'ai_assistant';
+    }
+  }, [selectedChat]);
+
+  // Fetch user session first
+  const { data: sessionData } = api.auth.me.useQuery(undefined, {
+    retry: 1,
+    staleTime: Infinity,
+  });
+
+  const session = React.useMemo(() => 
+    sessionData ? { user: sessionData } : null
+  , [sessionData]);
+
+  // Update the chat data type
+  const { data: chatData, refetch: refetchChat, isLoading: isChatLoading } = api.chat.getConversation.useQuery(
+    { 
+      workspaceId,
+      conversationId,
+      assistantType: currentAssistantType,
+    }, 
+    { 
+      enabled: Boolean(workspaceId && currentAssistantType && sessionData),
+      retry: false,
+      staleTime: 0,
+      refetchOnWindowFocus: false
+    }
+  );
+
+  // Handle chat query errors separately
+  React.useEffect(() => {
+    if (!chatData && !isChatLoading) {
+      console.error('Failed to load chat');
+      toast({
+        title: 'Error',
+        description: 'Failed to load chat. Please try again.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  }, [chatData, isChatLoading, toast]);
+
+  // Reset welcome loading when chat loads
+  React.useEffect(() => {
+    if (!isChatLoading) {
+      setIsWelcomeLoading(false);
+    }
+  }, [isChatLoading]);
+
+  // Handle query errors
+  React.useEffect(() => {
+    if (!workspaceId) {
+      console.error('No workspace ID found');
+      toast({
+        title: 'Error',
+        description: 'Workspace not found',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  }, [workspaceId, toast]);
+
+  // Move all hooks before any conditional returns
+  const chatContainerRef = React.useRef<HTMLDivElement>(null);
+
+  // Transform messages for display
+  const currentMessages = React.useMemo(() => {
+    if (!chatData || !chatData[currentAssistantType]) {
+      return [];
+    }
+
+    const messages = chatData[currentAssistantType] as ChatMessage[];
+    if (!Array.isArray(messages)) {
+      console.error('Invalid messages format:', messages);
+      return [];
+    }
+
+    const groupedMessages: MessageGroup[] = [];
+    let currentDate = '';
+
+    // If there are no messages, show the welcome message
+    if (messages.length === 0) {
+      const msgDate = new Date();
+      const formattedDate = formatChatDate(msgDate);
+      const formattedTime = formatChatTime(msgDate);
+      
+      groupedMessages.push({
+        date: formattedDate,
+        messages: [{
+          content: WELCOME_MESSAGES[currentAssistantType],
+          timestamp: formattedTime,
+          timeGroup: '0-1',
+          isOutgoing: false,
+          originalDate: msgDate,
+        }]
+      });
+      
+      return groupedMessages;
+    }
+
+    messages.forEach((msg: ChatMessage) => {
+      if (!msg) return;
+
+      const msgDate = new Date();
+      const formattedDate = formatChatDate(msgDate);
+      const formattedTime = formatChatTime(msgDate);
+
+      if (formattedDate !== currentDate) {
+        currentDate = formattedDate;
+        groupedMessages.push({
+          date: formattedDate,
+          messages: []
+        });
+      }
+
+      const currentGroup = groupedMessages[groupedMessages.length - 1];
+      
+      if (msg.user !== null) {
+        currentGroup.messages.push({
+          content: msg.user,
+          timestamp: formattedTime,
+          timeGroup: '0-1',
+          isOutgoing: true,
+          originalDate: msgDate,
+        });
+      }
+      
+      if (msg.assistant !== null) {
+        currentGroup.messages.push({
+          content: msg.assistant,
+          timestamp: formattedTime,
+          timeGroup: '0-1',
+          isOutgoing: false,
+          originalDate: msgDate,
+        });
+      }
+    });
+
+    return groupedMessages;
+  }, [chatData, currentAssistantType]);
+
+  // Scroll to bottom when messages change
+  React.useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [currentMessages]);
+
+  // Color mode values
+  const bgColor = useColorModeValue('white', 'gray.800');
   const chatListBg = useColorModeValue('white', 'gray.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.600');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
   const searchBg = useColorModeValue('gray.100', 'gray.700');
   const chatAreaBg = useColorModeValue('gray.100', 'gray.900');
   const messageInputBg = useColorModeValue('gray.100', 'gray.700');
 
-  // Transform chat history into message format with proper typing
-  const aiMessages = React.useMemo(() => {
-    if (!chatHistory || chatHistory.length === 0) return []
-    
-    // Sort messages by creation time to ensure correct order
-    const sortedMessages = [...chatHistory].sort((a, b) => {
-      const aTime = a.timestamp ? new Date(a.timestamp).getTime() : 0;
-      const bTime = b.timestamp ? new Date(b.timestamp).getTime() : 0;
-      return aTime - bTime;
-    });
+  // Add validation for workspaceId
+  React.useEffect(() => {
+    if (!workspaceId) {
+      console.error('No workspace ID found')
+    }
+  }, [workspaceId]);
 
-    // Group messages by date
-    const groupedMessages: {
-      date: string;
-      messages: Message[];
-    }[] = [];
+  // Effect to handle sidebar visibility based on chat selection
+  React.useEffect(() => {
+    if (selectedChat) {
+      setIsSidebarVisible(false);
+    }
+  }, [selectedChat]);
 
-    sortedMessages.forEach((msg, index) => {
-      if (!msg.timestamp) return;
-      
-      const msgDate = new Date(msg.timestamp);
-      const formattedDate = formatChatDate(msgDate);
-      const formattedTime = formatChatTime(msgDate);
-      
-      // Determine time group (every 2 hours)
-      const timeGroup = `${Math.floor(msgDate.getHours() / 2) * 2}-${Math.floor(msgDate.getHours() / 2) * 2 + 1}`;
-      
-      // Find or create date group
-      let dateGroup = groupedMessages.find(group => group.date === formattedDate);
-      if (!dateGroup) {
-        dateGroup = { date: formattedDate, messages: [] };
-        groupedMessages.push(dateGroup);
-      }
+  // Show loading state when session is loading
+  if (!sessionData) {
+    return (
+      <Flex justify="center" align="center" h="100vh">
+        <Spinner 
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="blue.500"
+          size="xl"
+        />
+      </Flex>
+    );
+  }
 
-      // Check if it's a welcome message
-      const isWelcomeMessage = msg.ai_assistant === "Hello! How can I help you today?" || 
-        msg.ai_assistant.toLowerCase().includes('welcome');
+  // Show error if no session
+  if (!session?.user) {
+    return (
+      <Flex justify="center" align="center" h="100vh" direction="column" gap={4}>
+        <Text>Please log in to access the chat</Text>
+      </Flex>
+    );
+  }
 
-      // Add message to group
-      dateGroup.messages.push({
-        content: msg.ai_assistant,
-        timestamp: formattedTime,
-        timeGroup,
-        isOutgoing: index % 2 !== 0, // Even indices (0, 2, etc.) are assistant messages, odd are user messages
-        originalDate: msgDate,
-        isWelcomeMessage
-      });
-    });
-
-    // Group messages within each date by time
-    groupedMessages.forEach(dateGroup => {
-      const timeGroupedMessages: Message[] = [];
-      let currentTimeGroup = '';
-
-      dateGroup.messages.forEach((msg) => {
-        // Add time separator if time group changes or it's a welcome message
-        if (msg.timeGroup !== currentTimeGroup || msg.isWelcomeMessage) {
-          currentTimeGroup = msg.timeGroup;
-          
-          // Add time separator message
-          timeGroupedMessages.push({
-            content: msg.timestamp,
-            timestamp: '',
-            timeGroup: currentTimeGroup,
-            isOutgoing: false,
-            originalDate: msg.originalDate,
-            isTimeSeparator: true
-          });
-        }
-
-        // Add the actual message
-        timeGroupedMessages.push(msg);
-      });
-
-      // Replace original messages with time-grouped messages
-      dateGroup.messages = timeGroupedMessages;
-    });
-
-    return groupedMessages;
-  }, [chatHistory]);
+  // Show error if no workspace
+  if (!workspaceId) {
+    return (
+      <Flex justify="center" align="center" h="100vh">
+        <Text>Workspace not found</Text>
+      </Flex>
+    );
+  }
 
   // Date Separator Component
   const DateSeparator = ({ date }: { date: string }) => (
@@ -469,41 +488,69 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
     </Flex>
   );
 
-  // Scroll to bottom when messages change
-  React.useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+  // Handle close chat
+  const handleCloseChat = () => {
+    setSelectedChat('ai');
+    setIsSidebarVisible(true);
+  };
+
+  const sendMessageMutation = api.chat.sendMessage.useMutation({
+    onMutate: () => {
+      setIsAILoading(true);
+      // Optimistically add user message
+      const userMessage = messageInput.trim();
+      setMessageInput('');
+      return { userMessage };
+    },
+    onSuccess: async (_, variables, context) => {
+      try {
+        await refetchChat();
+      } catch (error) {
+        console.error('Failed to refetch chat:', error);
+        // Restore message input if refetch fails
+        if (context?.userMessage) {
+          setMessageInput(context.userMessage);
+        }
+      }
+    },
+    onError: (error, variables, context) => {
+      console.error('Failed to send message:', error);
+      // Restore message input on error
+      if (context?.userMessage) {
+        setMessageInput(context.userMessage);
+      }
+      toast({
+        title: 'Error',
+        description: 'Failed to send message. Please try again.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    },
+    onSettled: () => {
+      setIsAILoading(false);
     }
-  }, [aiMessages]);
+  });
 
-  // Reset welcome loading when chat loads
-  React.useEffect(() => {
-    if (chatHistory && chatHistory.length > 0) {
-      setIsWelcomeLoading(false);
+  // Handle sending messages
+  const handleSendMessage = async () => {
+    if (!messageInput.trim() || !workspaceId || !sessionData) {
+      return;
     }
-  }, [chatHistory])
 
-  // Dummy messages for other chats
-  const dummyMessages = [
-    { content: "Let me check that for you", timestamp: "10:00 AM", isOutgoing: false },
-    { content: "Thanks!", timestamp: "10:01 AM", isOutgoing: true },
-  ]
-
-  // Get messages based on selected chat
-  const currentMessages: MessageGroup[] = selectedChat === 'ai' ? aiMessages : [
-    { 
-      date: 'Today',
-      messages: dummyMessages.map(msg => ({
-        content: msg.content,
-        timestamp: msg.timestamp,
-        timeGroup: '0-1',
-        isOutgoing: msg.isOutgoing,
-        originalDate: new Date(),
-      }))
+    try {
+      await sendMessageMutation.mutateAsync({
+        workspaceId,
+        conversationId,
+        message: messageInput.trim(),
+        assistantType: currentAssistantType,
+      });
+    } catch (error) {
+      // Error is handled in mutation callbacks
+      console.error('Error in handleSendMessage:', error);
     }
-  ];
+  };
 
-  // Add null check for rendering
   if (!workspaceId) {
     return (
       <Flex justify="center" align="center" h="100vh">
@@ -571,7 +618,7 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
           </Flex>
         </Box>
 
-        {/* Chat list */}
+        {/* Chat lists */}
         <VStack spacing={0} align="stretch" overflowY="auto" maxH="calc(100vh - 140px)">
           <ChatListItem
             name="AI Assistant"
@@ -581,6 +628,60 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
             isOnline={true}
             isSelected={selectedChat === 'ai'}
             onClick={() => setSelectedChat('ai')}
+          />
+          <ChatListItem
+            name="Sales Assistant"
+            lastMessage="Ready to help with sales!"
+            time="Now"
+            avatar="/sales-avatar.png"
+            isOnline={true}
+            isSelected={selectedChat === 'sales'}
+            onClick={() => setSelectedChat('sales')}
+          />
+          <ChatListItem
+            name="HR Assistant"
+            lastMessage="Ready to help with HR matters!"
+            time="Now"
+            avatar="/hr-avatar.png"
+            isOnline={true}
+            isSelected={selectedChat === 'hr'}
+            onClick={() => setSelectedChat('hr')}
+          />
+          <ChatListItem
+            name="Marketing Assistant"
+            lastMessage="Ready to help with marketing strategies!"
+            time="Now"
+            avatar="/marketing-avatar.png"
+            isOnline={true}
+            isSelected={selectedChat === 'marketing'}
+            onClick={() => setSelectedChat('marketing')}
+          />
+          <ChatListItem
+            name="Data Analyst"
+            lastMessage="Ready to help with data analysis!"
+            time="Now"
+            avatar="/data-avatar.png"
+            isOnline={true}
+            isSelected={selectedChat === 'data'}
+            onClick={() => setSelectedChat('data')}
+          />
+          <ChatListItem
+            name="Bug Reporting Assistant"
+            lastMessage="Ready to help with bug reports!"
+            time="Now"
+            avatar="/bug-avatar.png"
+            isOnline={true}
+            isSelected={selectedChat === 'bug'}
+            onClick={() => setSelectedChat('bug')}
+          />
+          <ChatListItem
+            name="RFP Response Assistant"
+            lastMessage="Ready to help with RFP responses!"
+            time="Now"
+            avatar="/rfp-avatar.png"
+            isOnline={true}
+            isSelected={selectedChat === 'rfp'}
+            onClick={() => setSelectedChat('rfp')}
           />
         </VStack>
       </Box>
@@ -597,13 +698,57 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
               borderColor={borderColor}
               align="center"
             >
-              <Avatar name={selectedChat} size="sm" />
+              <Avatar 
+                name={
+                  selectedChat === 'ai' 
+                    ? 'AI Assistant' 
+                    : selectedChat === 'sales'
+                      ? 'Sales Assistant'
+                      : selectedChat === 'hr'
+                        ? 'HR Assistant'
+                        : selectedChat === 'marketing'
+                          ? 'Marketing Assistant'
+                          : selectedChat === 'data'
+                            ? 'Data Analyst'
+                            : selectedChat === 'bug'
+                              ? 'Bug Reporting Assistant'
+                              : 'RFP Response Assistant'
+                } 
+                src={
+                  selectedChat === 'ai' 
+                    ? '/ai-avatar.png' 
+                    : selectedChat === 'sales'
+                      ? '/sales-avatar.png'
+                      : selectedChat === 'hr'
+                        ? '/hr-avatar.png'
+                        : selectedChat === 'marketing'
+                          ? '/marketing-avatar.png'
+                          : selectedChat === 'data'
+                            ? '/data-avatar.png'
+                            : selectedChat === 'bug'
+                              ? '/bug-avatar.png'
+                              : '/rfp-avatar.png'
+                }
+                size="sm" 
+              />
               <Box ml={3}>
                 <Text fontWeight="bold">
-                  {selectedChat === 'ai' ? 'AI Assistant' : selectedChat}
+                  {selectedChat === 'ai' 
+                    ? 'AI Assistant' 
+                    : selectedChat === 'sales'
+                      ? 'Sales Assistant'
+                      : selectedChat === 'hr'
+                        ? 'HR Assistant'
+                        : selectedChat === 'marketing'
+                          ? 'Marketing Assistant'
+                          : selectedChat === 'data'
+                            ? 'Data Analyst'
+                            : selectedChat === 'bug'
+                              ? 'Bug Reporting Assistant'
+                              : 'RFP Response Assistant'}
                 </Text>
                 <Text fontSize="xs" color="green.500">
-                  {selectedChat !== 'ai' && 'Online'}
+                  Online
                 </Text>
               </Box>
               <HStack ml="auto" spacing={2}>
@@ -612,10 +757,7 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params }) => {
                   aria-label="Close chat"
                   icon={<FiX />}
                   variant="ghost"
-                  onClick={() => {
-                    setSelectedChat(null);
-                    setIsSidebarVisible(true);
-                  }}
+                  onClick={handleCloseChat}
                 />
                 <IconButton
                   aria-label="More options"
