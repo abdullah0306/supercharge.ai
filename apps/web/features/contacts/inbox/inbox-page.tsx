@@ -156,18 +156,6 @@ interface ChatMessage {
   user: string | null;
 }
 
-interface ChatData {
-  id: number;
-  workspaceId: string | null;
-  userId: string;
-  conversationId: string;
-  ai_assistant: ChatMessage[];
-  sales_assistant: ChatMessage[];
-  hr_assistant: ChatMessage[];
-  marketing_assistant: ChatMessage[];
-  timestamp: Date | null;
-}
-
 interface Message {
   content: string;
   timestamp: string;
@@ -259,7 +247,7 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params, searchPara
   }, [selectedChat]);
 
   // Fetch user session first
-  const { data: sessionData, isLoading: isSessionLoading } = api.auth.me.useQuery(undefined, {
+  const { data: sessionData } = api.auth.me.useQuery(undefined, {
     retry: 1,
     staleTime: Infinity,
   });
@@ -317,40 +305,9 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params, searchPara
       });
     }
   }, [workspaceId, toast]);
-  // Show loading state when session is loading
-  if (!sessionData) {
-    return (
-      <Flex justify="center" align="center" h="100vh">
-        <Spinner 
-          thickness="4px"
-          speed="0.65s"
-          emptyColor="gray.200"
-          color="blue.500"
-          size="xl"
-        />
-      </Flex>
-    );
-  }
 
-  // Show error if no session
-  if (!session?.user) {
-    return (
-      <Flex justify="center" align="center" h="100vh" direction="column" gap={4}>
-        <Text>Please log in to access the chat</Text>
-      </Flex>
-    );
-  }
-
-  // Show error if no workspace
-  if (!workspaceId) {
-    return (
-      <Flex justify="center" align="center" h="100vh">
-        <Text>Workspace not found</Text>
-      </Flex>
-    );
-  }
-
-  const chatContainerRef = React.useRef<HTMLDivElement>(null)
+  // Move all hooks before any conditional returns
+  const chatContainerRef = React.useRef<HTMLDivElement>(null);
 
   // Transform messages for display
   const currentMessages = React.useMemo(() => {
@@ -435,13 +392,50 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params, searchPara
     }
   }, [currentMessages]);
 
-  // Move useColorModeValue hooks to the top level
-  const bgColor = useColorModeValue('gray.50', 'gray.900');
+  // Color mode values
+  const bgColor = useColorModeValue('white', 'gray.800');
   const chatListBg = useColorModeValue('white', 'gray.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.600');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
   const searchBg = useColorModeValue('gray.100', 'gray.700');
   const chatAreaBg = useColorModeValue('gray.100', 'gray.900');
   const messageInputBg = useColorModeValue('gray.100', 'gray.700');
+  const textColor = useColorModeValue('gray.800', 'white');
+  const mutedColor = useColorModeValue('gray.600', 'gray.400');
+  const separatorBg = useColorModeValue('gray.100', 'gray.700');
+  const separatorText = useColorModeValue('gray.500', 'gray.400');
+
+  // Show loading state when session is loading
+  if (!sessionData) {
+    return (
+      <Flex justify="center" align="center" h="100vh">
+        <Spinner 
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="blue.500"
+          size="xl"
+        />
+      </Flex>
+    );
+  }
+
+  // Show error if no session
+  if (!session?.user) {
+    return (
+      <Flex justify="center" align="center" h="100vh" direction="column" gap={4}>
+        <Text>Please log in to access the chat</Text>
+      </Flex>
+    );
+  }
+
+  // Show error if no workspace
+  if (!workspaceId) {
+    return (
+      <Flex justify="center" align="center" h="100vh">
+        <Text>Workspace not found</Text>
+      </Flex>
+    );
+  }
 
   // Date Separator Component
   const DateSeparator = ({ date }: { date: string }) => (

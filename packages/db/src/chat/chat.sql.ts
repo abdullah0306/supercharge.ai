@@ -3,7 +3,6 @@ import {
   pgTable, 
   serial, 
   varchar, 
-  text, 
   timestamp, 
   uuid,
   jsonb
