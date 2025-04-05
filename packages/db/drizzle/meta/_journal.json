@@ -15,6 +15,41 @@
       "when": 1742832477059,
       "tag": "0001_absent_robin_chapel",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1743781465796,
+      "tag": "0002_dashing_cannonball",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1743781967256,
+      "tag": "0003_sour_luminals",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1743782806920,
+      "tag": "0004_adorable_forgotten_one",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1743783231796,
+      "tag": "0005_productive_starbolt",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1743783684789,
+      "tag": "0006_past_black_queen",
+      "breakpoints": true
     }
   ]
 }

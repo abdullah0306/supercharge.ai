@@ -21,76 +21,85 @@ import {
   PageBody,
 } from '@saas-ui-pro/react'
 import { LuPlus, LuArrowRight, LuUser, LuSearch } from 'react-icons/lu'
+import { useRouter, useParams } from 'next/navigation'
+import { v4 as uuidv4 } from 'uuid'
 
 export default function AssistantsPage() {
+  const router = useRouter()
+  const params = useParams()
+  const workspaceId = params?.workspace as string
+
   // Assistant cards data
   const assistants = [
     {
       name: 'Sales Support Assistant',
-      description: 'The Sales Support Assistant is designed to assist the sales team at SprinterSoftwareGroup by drafting...',
-      creator: 'Jake Rosenthal',
-      type: 'Shared',
+      description: 'Specialized in sales support, helping with customer inquiries, sales strategies, and deal management.',
+      creator: 'Default Assistant',
+      type: 'Default',
       category: 'Sales'
     },
     {
-      name: 'Internal HR Assistant',
-      description: 'This assistant provides information and clarifications on company policies for new and existing...',
-      creator: 'Jason Fleming',
-      type: 'Shared'
-    },
-    {
-      name: 'RFP Response Assistant',
-      description: 'This assistant is designed to help SprinterSoftwareGroup efficiently respond to Requests for Proposal...',
-      creator: 'Jason Fleming',
-      type: 'Shared'
-    },
-    {
-      name: 'Sales Onboarding & Training Assistant',
-      description: 'This assistant is designed to facilitate the onboarding and training process for new sales employees at...',
-      creator: 'Jason Fleming',
-      type: 'Shared',
-      category: 'Sales'
-    },
-    {
-      name: 'SprinterSoftwareGroup General Assistant',
-      description: 'A general purpose assistant with context of SprinterSoftwareGroup.',
-      creator: 'Jake Rosenthal',
-      type: 'Shared'
-    },
-    {
-      name: 'HR Recruitment Assistant',
-      description: 'An AI assistant designed to aid human resources employees at SprinterSoftwareGroup in managing...',
-      creator: 'Jason Fleming',
-      type: 'Shared',
+      name: 'HR Assistant',
+      description: 'Provides guidance on HR policies, employee relations, and workplace procedures.',
+      creator: 'Default Assistant',
+      type: 'Default',
       category: 'Human Resources'
     },
     {
       name: 'Marketing Assistant',
-      description: 'This assistant aids in creating tailored marketing messages, ensures a consistent brand voice, and...',
-      creator: 'Jason Fleming',
-      type: 'Shared',
+      description: 'Helps create marketing content, analyze campaigns, and maintain brand consistency.',
+      creator: 'Default Assistant',
+      type: 'Default',
       category: 'Marketing'
     },
     {
       name: 'Data Analyst',
-      description: 'Analyze files with diverse data and formatting and generate files such as graphs.',
+      description: 'Analyzes data, generates insights, and helps with data visualization and reporting.',
       creator: 'Default Assistant',
-      type: 'Default'
+      type: 'Default',
+      category: 'Analytics'
     },
     {
       name: 'Bug Reporting Assistant',
-      description: 'This assistant aids the customer support team at SprinterSoftwareGroup by enhancing their ability...',
-      creator: 'Jake Rosenthal',
-      type: 'Shared'
+      description: 'Assists with documenting bugs, creating detailed reports, and tracking technical issues.',
+      creator: 'Default Assistant',
+      type: 'Default',
+      category: 'Support'
+    },
+    {
+      name: 'RFP Response Assistant',
+      description: 'Helps analyze RFP requirements and create comprehensive proposal responses.',
+      creator: 'Default Assistant',
+      type: 'Default',
+      category: 'Business'
     }
   ]
 
+  const handleStartChat = (assistant: string) => {
+    const conversationId = uuidv4()
+    if (assistant === 'Sales Support Assistant') {
+      router.push(`/${workspaceId}/inbox?assistant=sales&conversationId=${conversationId}`)
+    } else if (assistant === 'HR Assistant') {
+      router.push(`/${workspaceId}/inbox?assistant=hr&conversationId=${conversationId}`)
+    } else if (assistant === 'Marketing Assistant') {
+      router.push(`/${workspaceId}/inbox?assistant=marketing&conversationId=${conversationId}`)
+    } else if (assistant === 'Data Analyst') {
+      router.push(`/${workspaceId}/inbox?assistant=data&conversationId=${conversationId}`)
+    } else if (assistant === 'Bug Reporting Assistant') {
+      router.push(`/${workspaceId}/inbox?assistant=bug&conversationId=${conversationId}`)
+    } else if (assistant === 'RFP Response Assistant') {
+      router.push(`/${workspaceId}/inbox?assistant=rfp&conversationId=${conversationId}`)
+    } else {
+      router.push(`/${workspaceId}/inbox?assistant=ai&conversationId=${conversationId}`)
+    }
+  }
+
   const header = (
-    <Stack spacing={6} mb={8} pl={{ base: "20px", md: "44px" }}>
+    <Stack spacing={6} mb={8} pl={{ base: "20px", md: "44px", lg: "0" }}>
       <Flex justify="space-between" align="center" width="100%">
         <Box maxW={{ base: "60%", sm: "100%" }} overflow="hidden">
-          <Heading size={{ base: "sm", md: "md" }} mb={1} isTruncated pl={2}>Assistants</Heading>
-          <Text color="gray.600" fontSize={{ base: "sm", md: "md" }} noOfLines={2} pl={2}>
+          <Heading size={{ base: "sm", md: "md" }} mb={1} isTruncated pl={{ base: 2, lg: 0 }}>Assistants</Heading>
+          <Text color="gray.600" fontSize={{ base: "sm", md: "md" }} noOfLines={2} pl={{ base: 2, lg: 0 }}>
             Create and manage your AI-powered business assistants.
           </Text>
         </Box>
@@ -181,6 +190,7 @@ export default function AssistantsPage() {
                       textDecoration: 'none',
                       color: 'blue.600'
                     }}
+                    onClick={() => handleStartChat(assistant.name)}
                   >
                     Start a chat
                   </Button>

@@ -25,6 +25,8 @@ import {
   PageBody,
 } from '@saas-ui-pro/react'
 import { LuPlus, LuArrowRight, LuUser } from 'react-icons/lu'
+import { useRouter } from 'next/navigation'
+import { v4 as uuidv4 } from 'uuid'
 
 interface DashboardPageProps {
   params: {
@@ -37,42 +39,39 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ params: { workspac
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const workspaceId = workspace;
 
+  const router = useRouter()
+
   // Assistant cards data
   const assistants = [
     {
       name: 'Sales Support Assistant',
-      description: 'The Sales Support Assistant is designed to assist the sales team at SprinterSoftwareGroup by drafting...',
+      description: 'Specialized in sales support, helping with customer inquiries, sales strategies, and deal management.',
       initials: 'SA'
     },
     {
-      name: 'Internal HR Assistant',
-      description: 'This assistant provides information and clarifications on company policies for new and existing...',
-      initials: 'IA'
+      name: 'HR Assistant',
+      description: 'Provides guidance on HR policies, employee relations, and workplace procedures.',
+      initials: 'HR'
+    },
+    {
+      name: 'Marketing Assistant',
+      description: 'Helps create marketing content, analyze campaigns, and maintain brand consistency.',
+      initials: 'MA'
+    },
+    {
+      name: 'Data Analyst',
+      description: 'Analyzes data, generates insights, and helps with data visualization and reporting.',
+      initials: 'DA'
+    },
+    {
+      name: 'Bug Reporting Assistant',
+      description: 'Assists with documenting bugs, creating detailed reports, and tracking technical issues.',
+      initials: 'BR'
     },
     {
       name: 'RFP Response Assistant',
-      description: 'This assistant is designed to help SprinterSoftwareGroup efficiently respond to Requests for Proposal...',
+      description: 'Helps analyze RFP requirements and create comprehensive proposal responses.',
       initials: 'RA'
-    },
-    {
-      name: 'Sales Onboarding & Training Assistant',
-      description: 'This assistant is designed to facilitate the onboarding and training process for new sales employees at...',
-      initials: 'SA'
-    },
-    {
-      name: 'SprinterSoftwareGroup General Assistant',
-      description: 'A general purpose assistant with context of SprinterSoftwareGroup.',
-      initials: 'GA'
-    },
-    {
-      name: 'HR Recruitment Assistant',
-      description: 'An AI assistant designed to aid human resources employees at SprinterSoftwareGroup in managing...',
-      initials: 'HA'
-    },
-    {
-      name: 'LinkedIn Outreach Assistant',
-      description: 'This assistant helps SprinterSoftwareGroup with crafting custom, concise sales emails tailored...',
-      initials: 'LA'
     },
     {
       name: 'Create New Assistant',
@@ -103,6 +102,26 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ params: { workspac
     },
   ]
 
+  // Add handleStartChat function
+  const handleStartChat = (assistant: string) => {
+    const conversationId = uuidv4()
+    if (assistant === 'Sales Support Assistant') {
+      router.push(`/${workspaceId}/inbox?assistant=sales&conversationId=${conversationId}`)
+    } else if (assistant === 'HR Assistant') {
+      router.push(`/${workspaceId}/inbox?assistant=hr&conversationId=${conversationId}`)
+    } else if (assistant === 'Marketing Assistant') {
+      router.push(`/${workspaceId}/inbox?assistant=marketing&conversationId=${conversationId}`)
+    } else if (assistant === 'Data Analyst') {
+      router.push(`/${workspaceId}/inbox?assistant=data&conversationId=${conversationId}`)
+    } else if (assistant === 'Bug Reporting Assistant') {
+      router.push(`/${workspaceId}/inbox?assistant=bug&conversationId=${conversationId}`)
+    } else if (assistant === 'RFP Response Assistant') {
+      router.push(`/${workspaceId}/inbox?assistant=rfp&conversationId=${conversationId}`)
+    } else {
+      router.push(`/${workspaceId}/inbox?assistant=ai&conversationId=${conversationId}`)
+    }
+  }
+
   const header = (
     <Flex 
       justify="space-between" 
@@ -110,11 +129,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ params: { workspac
       width="100%" 
       mb={8}
       gap={4}
-      pl={{ base: "30px", md: "44px" }}
+      pl={{ base: "30px", md: "44px", lg: "0" }}
     >
       <Box maxW={{ base: "60%", sm: "100%" }} overflow="hidden">
-        <Heading size={{ base: "sm", md: "md" }} mb={1} isTruncated pl={2}>Welcome, Jason</Heading>
-        <Text color="gray.600" fontSize={{ base: "sm", md: "md" }} noOfLines={2} pl={2}>
+        <Heading size={{ base: "sm", md: "md" }} mb={1} isTruncated pl={{ base: 2, lg: 0 }}>Welcome, Jason</Heading>
+        <Text color="gray.600" fontSize={{ base: "sm", md: "md" }} noOfLines={2} pl={{ base: 2, lg: 0 }}>
           Start a new chat, or pick up where you left off
         </Text>
       </Box>
@@ -188,6 +207,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ params: { workspac
                           textDecoration: 'none',
                           color: 'blue.600'
                         }}
+                        onClick={() => handleStartChat(assistant.name)}
                       >
                         Start a chat
                       </Button>

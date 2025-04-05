@@ -5,7 +5,8 @@ import {
   varchar, 
   text, 
   timestamp, 
-  uuid
+  uuid,
+  jsonb
 } from 'drizzle-orm/pg-core';
 import { users } from '../users/users.sql'; 
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
@@ -17,7 +18,13 @@ export const chatHistory = pgTable('chat_history', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   conversationId: uuid('conversation_id').notNull().defaultRandom(),
-  ai_assistant: text('ai_assistant').notNull(),
+  ai_assistant: jsonb('ai_assistant').default('[]').notNull(),
+  sales_assistant: jsonb('sales_assistant').default('[]').notNull(),
+  hr_assistant: jsonb('hr_assistant').default('[]').notNull(),
+  marketing_assistant: jsonb('marketing_assistant').default('[]').notNull(),
+  data_analyst: jsonb('data_analyst').default('[]').notNull(),
+  bug_reporting: jsonb('bug_reporting').default('[]').notNull(),
+  rfp_response: jsonb('rfp_response').default('[]').notNull(),
   workspaceId: varchar('workspace_id', { length: 255 }),
   timestamp: timestamp('timestamp', { withTimezone: true }).defaultNow(),
 });

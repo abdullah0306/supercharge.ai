@@ -121,7 +121,6 @@ export const AppSidebar: React.FC<AppSidebarProps> = (props) => {
                 href={usePath('inbox')}
                 isActive={useActivePath('inbox', { end: false })}
                 label="Inbox"
-                badge={2}
                 icon={<LuInbox />}
                 hotkey="navigation.inbox"
               />
