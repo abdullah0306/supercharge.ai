@@ -628,7 +628,7 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params, searchPara
           </Flex>
         </Box>
 
-        {/* Chat list */}
+        {/* Chat lists */}
         <VStack spacing={0} align="stretch" overflowY="auto" maxH="calc(100vh - 140px)">
           <ChatListItem
             name="AI Assistant"
