@@ -399,10 +399,20 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params, searchPara
   const searchBg = useColorModeValue('gray.100', 'gray.700');
   const chatAreaBg = useColorModeValue('gray.100', 'gray.900');
   const messageInputBg = useColorModeValue('gray.100', 'gray.700');
-  const textColor = useColorModeValue('gray.800', 'white');
-  const mutedColor = useColorModeValue('gray.600', 'gray.400');
-  const separatorBg = useColorModeValue('gray.100', 'gray.700');
-  const separatorText = useColorModeValue('gray.500', 'gray.400');
+
+  // Add validation for workspaceId
+  React.useEffect(() => {
+    if (!workspaceId) {
+      console.error('No workspace ID found')
+    }
+  }, [workspaceId]);
+
+  // Effect to handle sidebar visibility based on chat selection
+  React.useEffect(() => {
+    if (selectedChat) {
+      setIsSidebarVisible(false);
+    }
+  }, [selectedChat]);
 
   // Show loading state when session is loading
   if (!sessionData) {
@@ -540,20 +550,6 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params, searchPara
       console.error('Error in handleSendMessage:', error);
     }
   };
-
-  // Effect to handle sidebar visibility based on chat selection
-  React.useEffect(() => {
-    if (selectedChat) {
-      setIsSidebarVisible(false);
-    }
-  }, [selectedChat]);
-
-  // Add validation for workspaceId
-  React.useEffect(() => {
-    if (!workspaceId) {
-      console.error('No workspace ID found')
-    }
-  }, [workspaceId]);
 
   if (!workspaceId) {
     return (
