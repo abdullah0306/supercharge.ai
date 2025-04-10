@@ -15,6 +15,8 @@ import {
   Divider,
   useToast,
   Spinner,
+  Wrap,
+  WrapItem,
 } from '@chakra-ui/react'
 import { FiMessageSquare, FiBox, FiMoreVertical, FiSearch, FiX } from 'react-icons/fi'
 import { api } from '#lib/trpc/react'
@@ -169,6 +171,86 @@ interface MessageGroup {
   date: string;
   messages: Message[];
 }
+
+// Add these interfaces and constants before the ChatMessage interface
+interface QuickOption {
+  text: string;
+  onClick: () => void;
+}
+
+interface QuickOptionsProps {
+  options: QuickOption[];
+}
+
+const QUICK_OPTIONS = {
+  ai_assistant: [
+    "What can you help me with?",
+    "How do I use this workspace?",
+    "Tell me about my recent activity",
+    "Help me get started"
+  ],
+  sales_assistant: [
+    "Draft a sales email",
+    "Help with pricing strategy",
+    "Create a proposal",
+    "Competitive analysis"
+  ],
+  hr_assistant: [
+    "Company policies",
+    "Employee benefits",
+    "Onboarding process",
+    "Performance review guidelines"
+  ],
+  marketing_assistant: [
+    "Create social media content",
+    "Email campaign ideas",
+    "SEO optimization tips",
+    "Content strategy help"
+  ],
+  data_analyst: [
+    "Analyze this dataset",
+    "Create a visualization",
+    "Statistical analysis help",
+    "Data cleaning tips"
+  ],
+  bug_reporting: [
+    "Report a new bug",
+    "Track bug status",
+    "Bug reproduction steps",
+    "Priority assessment"
+  ],
+  rfp_response: [
+    "RFP requirements analysis",
+    "Draft proposal section",
+    "Technical solution description",
+    "Pricing strategy help"
+  ]
+};
+
+// Add the QuickOptions component before the ChatMessage component
+const QuickOptions: React.FC<QuickOptionsProps> = ({ options }) => {
+  const buttonBg = useColorModeValue('white', 'gray.700');
+  const buttonHoverBg = useColorModeValue('gray.100', 'gray.600');
+
+  return (
+    <Wrap spacing={2} p={4}>
+      {options.map((option, index) => (
+        <WrapItem key={index}>
+          <Button
+            size="sm"
+            bg={buttonBg}
+            _hover={{ bg: buttonHoverBg }}
+            onClick={option.onClick}
+            borderRadius="full"
+            boxShadow="sm"
+          >
+            {option.text}
+          </Button>
+        </WrapItem>
+      ))}
+    </Wrap>
+  );
+};
 
 export const InboxListPage: React.FC<InboxListPageProps> = ({ params, searchParams }) => {
   const routeParams = useParams()
@@ -828,6 +910,33 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params, searchPara
                 </>
               )}
             </Flex>
+
+            {/* Quick Options */}
+            {selectedChat && (
+              <QuickOptions
+                options={QUICK_OPTIONS[
+                  selectedChat === 'ai' ? 'ai_assistant' :
+                  selectedChat === 'sales' ? 'sales_assistant' :
+                  selectedChat === 'hr' ? 'hr_assistant' :
+                  selectedChat === 'marketing' ? 'marketing_assistant' :
+                  selectedChat === 'data' ? 'data_analyst' :
+                  selectedChat === 'bug' ? 'bug_reporting' :
+                  'rfp_response'
+                ].map(text => ({
+                  text,
+                  onClick: () => {
+                    setMessageInput(text);
+                    // Directly send the message
+                    sendMessageMutation.mutate({
+                      workspaceId,
+                      conversationId,
+                      message: text,
+                      assistantType: currentAssistantType,
+                    });
+                  }
+                }))}
+              />
+            )}
 
             {/* Message input */}
             <Flex
