@@ -22,7 +22,7 @@ import { FiMessageSquare, FiBox, FiMoreVertical, FiSearch, FiX } from 'react-ico
 import { api } from '#lib/trpc/react'
 import { v4 as uuidv4 } from 'uuid'
 import { useParams } from 'next/navigation'
-import { WELCOME_MESSAGES } from '#lib/ai/config'
+import { WELCOME_MESSAGES, QUICK_OPTIONS } from '#lib/ai/config'
 
 // Chat message component
 interface ChatMessageProps {
@@ -181,51 +181,6 @@ interface QuickOption {
 interface QuickOptionsProps {
   options: QuickOption[];
 }
-
-const QUICK_OPTIONS = {
-  ai_assistant: [
-    "What can you help me with?",
-    "How do I use this workspace?",
-    "Tell me about my recent activity",
-    "Help me get started"
-  ],
-  sales_assistant: [
-    "Draft a sales email",
-    "Help with pricing strategy",
-    "Create a proposal",
-    "Competitive analysis"
-  ],
-  hr_assistant: [
-    "Company policies",
-    "Employee benefits",
-    "Onboarding process",
-    "Performance review guidelines"
-  ],
-  marketing_assistant: [
-    "Create social media content",
-    "Email campaign ideas",
-    "SEO optimization tips",
-    "Content strategy help"
-  ],
-  data_analyst: [
-    "Analyze this dataset",
-    "Create a visualization",
-    "Statistical analysis help",
-    "Data cleaning tips"
-  ],
-  bug_reporting: [
-    "Report a new bug",
-    "Track bug status",
-    "Bug reproduction steps",
-    "Priority assessment"
-  ],
-  rfp_response: [
-    "RFP requirements analysis",
-    "Draft proposal section",
-    "Technical solution description",
-    "Pricing strategy help"
-  ]
-};
 
 // Add the QuickOptions component before the ChatMessage component
 const QuickOptions: React.FC<QuickOptionsProps> = ({ options }) => {
@@ -406,12 +361,15 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params, searchPara
     const groupedMessages: MessageGroup[] = [];
     let currentDate = '';
 
-    // If there are no messages, show the welcome message
-    if (messages.length === 0) {
-      const msgDate = new Date();
-      const formattedDate = formatChatDate(msgDate);
-      const formattedTime = formatChatTime(msgDate);
-      
+    // Only show welcome message if there are no messages or if it's not already included
+    const hasWelcomeMessage = messages.length > 0 && messages[0]?.assistant === WELCOME_MESSAGES[currentAssistantType];
+    
+    // Add welcome message to first group
+    const msgDate = new Date();
+    const formattedDate = formatChatDate(msgDate);
+    const formattedTime = formatChatTime(msgDate);
+    
+    if (!hasWelcomeMessage) {
       groupedMessages.push({
         date: formattedDate,
         messages: [{
@@ -422,10 +380,15 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params, searchPara
           originalDate: msgDate,
         }]
       });
-      
+      currentDate = formattedDate;
+    }
+
+    // If there are no additional messages, return current groups
+    if (messages.length === 0) {
       return groupedMessages;
     }
 
+    // Process the rest of the messages
     messages.forEach((msg: ChatMessage) => {
       if (!msg) return;
 
@@ -433,15 +396,21 @@ export const InboxListPage: React.FC<InboxListPageProps> = ({ params, searchPara
       const formattedDate = formatChatDate(msgDate);
       const formattedTime = formatChatTime(msgDate);
 
+      // Create new group if date changes
       if (formattedDate !== currentDate) {
         currentDate = formattedDate;
-        groupedMessages.push({
-          date: formattedDate,
-          messages: []
-        });
+        // Only create new group if date is different from existing groups
+        if (!groupedMessages.some(group => group.date === formattedDate)) {
+          groupedMessages.push({
+            date: formattedDate,
+            messages: []
+          });
+        }
       }
 
-      const currentGroup = groupedMessages[groupedMessages.length - 1];
+      // Find the correct group for this message
+      const currentGroup = groupedMessages.find(group => group.date === formattedDate);
+      if (!currentGroup) return; // Skip if no valid group found
       
       if (msg.user !== null) {
         currentGroup.messages.push({
