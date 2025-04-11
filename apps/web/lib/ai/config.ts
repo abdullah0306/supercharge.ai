@@ -113,4 +113,50 @@ export const WELCOME_MESSAGES = {
   data_analyst: "Hello! I'm your Data Analyst Assistant. I'm here to help you analyze data, create visualizations, and derive meaningful insights. How can I assist you today?",
   bug_reporting: "Hello! I'm your Bug Reporting Assistant. I'm here to help you document and analyze software bugs, gather technical details, and support the bug resolution process. How can I assist you today?",
   rfp_response: "Hello! I'm your RFP Response Assistant. I'm here to help you analyze requirements, draft proposals, and create compelling RFP responses. How can I assist you today?"
+};
+
+// Quick options for different assistant types
+export const QUICK_OPTIONS = {
+  ai_assistant: [
+    "What can you help me with?",
+    "How do I use this workspace?",
+    "Tell me about my recent activity",
+    "Help me get started"
+  ],
+  sales_assistant: [
+    "Draft a sales email",
+    "Help with pricing strategy",
+    "Create a proposal",
+    "Competitive analysis"
+  ],
+  hr_assistant: [
+    "Company policies",
+    "Employee benefits",
+    "Onboarding process",
+    "Performance review guidelines"
+  ],
+  marketing_assistant: [
+    "Create social media content",
+    "Email campaign ideas",
+    "SEO optimization tips",
+    "Content strategy help"
+  ],
+  data_analyst: [
+    "Analyze this dataset",
+    "Create a visualization",
+    "Statistical analysis help",
+    "Data cleaning tips"
+  ],
+  bug_reporting: [
+    "Report a new bug",
+    "Track bug status",
+    "Bug reproduction steps",
+    "Priority assessment"
+  ],
+  rfp_response: [
+    "RFP requirements analysis",
+    "Draft proposal section",
+    "Technical solution description",
+    "Pricing strategy help"
+  ]
 }; 
